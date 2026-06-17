@@ -2,7 +2,7 @@
 
 ## Shop announcement (the banner line at the top of your shop)
 > Beautiful, fillable travel planners for people who like to wander slowly. ✦
-> Instant download · US Letter + A4 · reuse for every trip.
+> Designed in Rennes, France · instant download · US Letter + A4 · reuse for every trip.
 
 ---
 
@@ -23,8 +23,12 @@ reusable for every journey to come. Warm paper tones, an elegant serif, and plen
 of room to breathe, because planning a trip should feel like the first lovely hour
 of it.
 
+I'm Marin — a lifelong travel enthusiast who designs every planner by hand from my
+desk in Rennes, in Brittany, France. The Slow Atlas is simply the planner I always
+wished I'd had.
+
 Wherever you're headed — a slow weekend by the coast or a year of far-flung
-adventures — we hope The Slow Atlas helps you plan it with intention and enjoy
+adventures — I hope The Slow Atlas helps you plan it with intention and enjoy
 every mile along the way.
 
 Thank you for being here. Bon voyage. 🌍
@@ -37,17 +41,12 @@ Thank you for being here. Bon voyage. 🌍
 
 The Slow Atlas makes travel planners for people who'd rather wander than rush —
 beautiful enough to enjoy, practical enough to actually use, and reusable for every
-trip. Fillable or printable, designed with warm paper tones and room to breathe.
+trip. Fillable or printable, designed by hand in Rennes, France.
 
 Plan your next adventure with intention. Bon voyage. 🌍
 
 ---
 
-## Optional personal touch (recommended — fill in the brackets)
-Add one honest line to the story; buyers connect with a real person:
-
-> I'm [name], and I [started this after planning one too many trips in messy
-> spreadsheets / have always loved the quiet ritual of planning a journey]. Each
-> planner is designed by hand from my desk in [your city].
-
-*(Keep this true — authenticity is what makes an About section land.)*
+## City field
+Put **Rennes, France** — it's authentic, adds charm to the brand, and (for digital
+downloads) carries no reach penalty whatsoever.
