@@ -1,12 +1,36 @@
 # Travel OS
 
-A high-end, interactive digital travel planner — built to be sold as a premium
-download (e.g. on Etsy) while actually *working* as a real planning tool, not a
-static template.
+A high-end, interactive travel planning project with **two deliverables**:
 
-> Plan your dream trip, effortlessly.
+1. **Explorer OS — The Travel Planner** · a premium, fillable, printable **PDF**
+   (the actual product you can sell on Etsy). See [`dist/`](dist/).
+2. **A Next.js web app** · a free interactive demo/landing page to attract buyers.
 
-## ✨ What's inside
+> Plan every trip for the rest of your life.
+
+## 📕 The product — Explorer OS planner (PDF)
+
+A 17-page, **fillable + printable** travel planner with an editorial, slow-travel
+aesthetic (warm cream paper, an elegant serif display, muted terracotta/sage/blue
+accents). 297 interactive form fields and checkboxes.
+
+- **Pages:** cover · how-to · trip overview · pre-trip checklist · daily itinerary
+  (×5) · budget planner · expense log · packing list · reservations · journal (×2)
+  · bucket list
+- **Editions:** US Letter **and** A4 — `dist/Explorer-OS-Travel-Planner-*.pdf`
+- **Etsy mockups:** ready-to-use listing images in `dist/etsy-mockups/`
+- **Fonts:** Italiana (display), Lora (serif), Outfit (sans) — bundled in
+  `assets/fonts/`, all SIL OFL licensed (free for commercial use)
+
+Regenerate both editions any time:
+
+```bash
+npm run planner
+```
+
+The generator is `scripts/generate-planner.mjs` (built with `pdf-lib`).
+
+## ✨ The web app
 
 **Marketing site** (`/`)
 - Glassmorphic hero with an animated planner preview
