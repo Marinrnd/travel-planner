@@ -81,6 +81,16 @@ function hline(p, x1, x2, y, { thickness = 0.7, color = hair } = {}) {
   p.drawLine({ start: { x: x1, y }, end: { x: x2, y }, thickness, color });
 }
 
+// The Slow Atlas globe mark (matches assets/brand/emblem.svg).
+function globe(p, cx, cy, r, color = terra, w = 1) {
+  p.drawCircle({ x: cx, y: cy, size: r, borderColor: color, borderWidth: w, color: undefined });
+  p.drawEllipse({ x: cx, y: cy, xScale: r * 0.421, yScale: r, borderColor: color, borderWidth: w, color: undefined });
+  hline(p, cx - r, cx + r, cy, { thickness: w, color });
+  const dy = r * 0.447, hw = r * 0.724;
+  hline(p, cx - hw, cx + hw, cy + dy, { thickness: w, color });
+  hline(p, cx - hw, cx + hw, cy - dy, { thickness: w, color });
+}
+
 // ---- Page furniture -------------------------------------------------------
 function header(p, num, tag, title, accent = terra) {
   // faded display numeral, top-right
@@ -94,7 +104,7 @@ function header(p, num, tag, title, accent = terra) {
 
 function footer(p, label, n) {
   hline(p, M, W - M, 46, { thickness: 0.6 });
-  tracked(p, "EXPLORER OS", M, 32, { size: 7.5, font: NB, color: sub, tracking: 2 });
+  tracked(p, "THE SLOW ATLAS", M, 32, { size: 7.5, font: NB, color: sub, tracking: 2 });
   const r = label.toUpperCase();
   const rw = trackedWidth(r, { size: 7.5, font: NB, tracking: 2 });
   tracked(p, r, W - M - rw, 32, { size: 7.5, font: NB, color: sub, tracking: 2 });
@@ -154,14 +164,11 @@ function cover() {
   p.drawRectangle({ x: pad, y: pad, width: W - pad * 2, height: H - pad * 2, borderColor: ink, borderWidth: 1, color: undefined });
   p.drawRectangle({ x: pad + 5, y: pad + 5, width: W - (pad + 5) * 2, height: H - (pad + 5) * 2, borderColor: hair, borderWidth: 0.6, color: undefined });
 
-  // top mark
-  trackedCenter(p, "THE TRAVEL PLANNER", H - 150, { size: 9, font: NB, color: terra, tracking: 4 });
+  // maker's mark
+  trackedCenter(p, "THE SLOW ATLAS", H - 138, { size: 9, font: NB, color: terra, tracking: 5 });
 
-  // line-art sun / horizon emblem
-  const cx = W / 2, cyE = H - 250;
-  p.drawCircle({ x: cx, y: cyE, size: 26, borderColor: terra, borderWidth: 1, color: undefined });
-  hline(p, cx - 70, cx - 36, cyE, { thickness: 0.8, color: terra });
-  hline(p, cx + 36, cx + 70, cyE, { thickness: 0.8, color: terra });
+  // globe emblem
+  globe(p, W / 2, H - 240, 30, terra, 1);
 
   // wordmark
   center(p, "Explorer OS", H / 2 - 8, { size: 62, font: D, color: ink });
@@ -169,7 +176,7 @@ function cover() {
   center(p, "Plan every trip for the rest of your life.", H / 2 - 64, { size: 14, font: SI, color: sub });
 
   // editorial volume mark
-  trackedCenter(p, "VOLUME I  •  UNLIMITED TRIPS", 230, { size: 8.5, font: NB, color: sub, tracking: 3 });
+  trackedCenter(p, "A SLOW ATLAS TRAVEL PLANNER  •  VOLUME I", 230, { size: 8.5, font: NB, color: sub, tracking: 3 });
 
   // belongs-to
   tracked(p, "THIS PLANNER BELONGS TO", M + 14, 168, { size: 8, font: NB, color: sub, tracking: 2 });
@@ -437,13 +444,11 @@ function back() {
   paperBg(p);
   const pad = 38;
   p.drawRectangle({ x: pad, y: pad, width: W - pad * 2, height: H - pad * 2, borderColor: hair, borderWidth: 0.6, color: undefined });
-  const cx = W / 2, cyE = H / 2 + 70;
-  p.drawCircle({ x: cx, y: cyE, size: 22, borderColor: terra, borderWidth: 1, color: undefined });
-  hline(p, cx - 64, cx - 32, cyE, { thickness: 0.8, color: terra });
-  hline(p, cx + 32, cx + 64, cyE, { thickness: 0.8, color: terra });
+  globe(p, W / 2, H / 2 + 78, 24, terra, 1);
   center(p, "Bon voyage", H / 2 + 6, { size: 40, font: D, color: ink });
-  center(p, "Thank you for planning with Explorer OS.", H / 2 - 28, { size: 13, font: SI, color: sub });
+  center(p, "Thank you for planning with The Slow Atlas.", H / 2 - 28, { size: 13, font: SI, color: sub });
   trackedCenter(p, "REUSE FOR EVERY TRIP, FOR YEARS TO COME", H / 2 - 64, { size: 8, font: NB, color: sub, tracking: 3 });
+  trackedCenter(p, "THE SLOW ATLAS  ·  EST. MMXXVI", 120, { size: 8, font: NB, color: terra, tracking: 3 });
 }
 
 // ---- Build one edition ----------------------------------------------------
