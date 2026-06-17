@@ -1,0 +1,91 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Ital';src:url('file:///home/user/travel-planner/assets/fonts/Italiana-Regular.ttf')}
+@font-face{font-family:'LoraI';src:url('file:///home/user/travel-planner/assets/fonts/Lora-Italic.ttf')}
+@font-face{font-family:'OutfitB';src:url('file:///home/user/travel-planner/assets/fonts/Outfit-Bold.ttf')}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#fff}
+.tile{display:flex;align-items:center;justify-content:center;position:relative}
+.em{display:block}
+.em svg{display:block}
+.word{font-family:'Ital';line-height:.92;letter-spacing:.5px}
+.the{font-family:'OutfitB';letter-spacing:7px;text-transform:uppercase}
+.sub{font-family:'OutfitB';letter-spacing:5px;text-transform:uppercase}
+.tag{font-family:'LoraI'}
+
+/* ---- transparent primary (stacked) ---- */
+#primary{width:760px;height:760px;flex-direction:column;background:transparent}
+#primary .the{font-size:26px;color:#7c8a6b;margin-top:30px}
+#primary .word{font-size:108px;color:#2E2A24;margin-top:10px}
+#primary .sub{font-size:18px;color:#B9603F;margin-top:24px}
+
+/* ---- transparent horizontal ---- */
+#horiz{width:1200px;height:420px;background:transparent;gap:46px}
+#horiz .word{font-size:96px;color:#2E2A24}
+#horiz .the{font-size:22px;color:#7c8a6b}
+#horiz .sub{font-size:15px;color:#B9603F;margin-top:14px}
+
+/* ---- square avatar on cream ---- */
+#avaCream{width:600px;height:600px;flex-direction:column;
+  background:radial-gradient(420px 320px at 50% 8%, #F6ECDD, transparent 60%),#FAF7F1}
+#avaCream .word{font-size:62px;color:#2E2A24;margin-top:14px}
+#avaCream .sub{font-size:14px;color:#B9603F;margin-top:18px}
+
+/* ---- square avatar on terracotta ---- */
+#avaTerra{width:600px;height:600px;flex-direction:column;
+  background:linear-gradient(150deg,#C2613F,#A24E32)}
+#avaTerra .word{font-size:62px;color:#FAF3E9;margin-top:14px}
+#avaTerra .sub{font-size:14px;color:#F2D9C7;margin-top:18px}
+
+/* ---- banner ---- */
+#banner{width:1680px;height:420px;flex-direction:column;
+  background:radial-gradient(900px 500px at 12% -20%, #F6ECDD, transparent 60%),
+             radial-gradient(800px 500px at 100% 120%, #F1E2D2, transparent 55%),
+             linear-gradient(160deg,#FAF7F1,#F3EADB)}
+#banner .row{display:flex;align-items:center;gap:34px}
+#banner .word{font-size:78px;color:#2E2A24}
+#banner .the{font-size:18px;color:#7c8a6b}
+#banner .tag{font-size:23px;color:#8C8478;margin-top:26px}
+</style></head><body>
+
+<!-- emblem template colors set via inline style on each use -->
+
+<div class="tile" id="primary">
+  <span class="em" style="color:#B9603F"><svg width="180" height="180" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><line x1="12" y1="50" x2="88" y2="50"/><line x1="22.5" y1="33" x2="77.5" y2="33"/><line x1="22.5" y1="67" x2="77.5" y2="67"/></svg></span>
+  <div class="the">The</div>
+  <div class="word">Slow Atlas</div>
+  <div class="sub">Travel Planners</div>
+</div>
+
+<div class="tile" id="horiz">
+  <span class="em" style="color:#B9603F"><svg width="220" height="220" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><line x1="12" y1="50" x2="88" y2="50"/><line x1="22.5" y1="33" x2="77.5" y2="33"/><line x1="22.5" y1="67" x2="77.5" y2="67"/></svg></span>
+  <div style="text-align:left">
+    <div class="the">The</div>
+    <div class="word">Slow Atlas</div>
+    <div class="sub">Travel Planners</div>
+  </div>
+</div>
+
+<div class="tile" id="avaCream">
+  <span class="em" style="color:#B9603F"><svg width="150" height="150" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><line x1="12" y1="50" x2="88" y2="50"/><line x1="22.5" y1="33" x2="77.5" y2="33"/><line x1="22.5" y1="67" x2="77.5" y2="67"/></svg></span>
+  <div class="word">Slow Atlas</div>
+  <div class="sub">Est. MMXXVI</div>
+</div>
+
+<div class="tile" id="avaTerra">
+  <span class="em" style="color:#F2D9C7"><svg width="150" height="150" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><line x1="12" y1="50" x2="88" y2="50"/><line x1="22.5" y1="33" x2="77.5" y2="33"/><line x1="22.5" y1="67" x2="77.5" y2="67"/></svg></span>
+  <div class="word">Slow Atlas</div>
+  <div class="sub">Est. MMXXVI</div>
+</div>
+
+<div class="tile" id="banner">
+  <div class="row">
+    <span class="em" style="color:#B9603F"><svg width="130" height="130" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><line x1="12" y1="50" x2="88" y2="50"/><line x1="22.5" y1="33" x2="77.5" y2="33"/><line x1="22.5" y1="67" x2="77.5" y2="67"/></svg></span>
+    <div style="text-align:left">
+      <div class="the">The</div>
+      <div class="word">Slow Atlas</div>
+    </div>
+  </div>
+  <div class="tag">Plan every trip for the rest of your life.</div>
+</div>
+
+</body></html>
