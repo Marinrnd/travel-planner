@@ -6,7 +6,7 @@ Listing images: `dist/thailand-mockups/`
 ---
 
 ## Title
-> Thailand Travel Guide & Road Trip Itinerary | Printable + Fillable PDF | Itineraries, Budget, Maps & Phrasebook | Instant Download
+> Thailand Travel Guide PDF | Complete Itinerary, Budget, Food & Phrasebook | Printable Digital Guidebook | Instant Download
 
 ## Tags (13)
 ```
@@ -17,12 +17,12 @@ chiang mai guide, printable guide, travel ebook, asia travel, trip planner
 
 ## Description (plain text — paste as is)
 
-Thailand Road Trip Atlas — a beautiful printable & fillable PDF guide to the legendary self-drive routes of Thailand. Instant download · US Letter + A4.
+Thailand: The Complete Guide — a beautiful, illustrated PDF guidebook covering where to go, what to eat and how to travel Thailand slowly. 34 pages. Instant download · US Letter + A4.
 
 ✦ THE SLOW ATLAS
 Legendary routes, slowly travelled.
 
-A road-tripper's companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports. Part guidebook, part planner — with vector route maps, a full day-by-day Mae Hong Son Loop, and pages to make the trip your own.
+A companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports — with destinations, three ready-to-use itineraries, hand-drawn maps, a dish glossary and a Thai phrasebook.
 
 ━━━━━━━━━━━━━━━━━━━━
 WHAT'S INSIDE · 34 pages (a complete illustrated guide)
@@ -40,9 +40,9 @@ WHAT'S INSIDE · 34 pages (a complete illustrated guide)
 
 ━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS
-• Fillable — type into the planning pages in any PDF reader or GoodNotes.
+• Read anywhere — open on your phone, tablet or laptop, online or off.
 • Printable — clean, ink-friendly design; print as many times as you like.
-• Yours forever — reuse it for every trip to Thailand.
+• Yours forever — read it again for every trip to Thailand.
 
 ━━━━━━━━━━━━━━━━━━━━
 YOU'LL RECEIVE · instant download
