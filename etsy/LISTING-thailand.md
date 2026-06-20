@@ -25,16 +25,27 @@ Legendary routes, slowly travelled.
 A road-tripper's companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports. Part guidebook, part planner — with vector route maps, a full day-by-day Mae Hong Son Loop, and pages to make the trip your own.
 
 ━━━━━━━━━━━━━━━━━━━━
-WHAT'S INSIDE · 18 pages
-• Thailand at a glance — overview map of the four great routes
-• Before you go — the season that makes or breaks a trip
-• Driving in Thailand — licences, scooter vs. car, fuel & safety
-• Money, SIM & health essentials
-• Culture & useful Thai phrases
-• The four great routes, mapped
-• The Mae Hong Son Loop — a 7-day, turn-by-turn slow itinerary
-• Food on the road — what to order, region by region
-• Fillable planning pages — bucket list, budget, packing & daily plans
+WHAT'S INSIDE · 35 pages
+
+THE GUIDE
+• Thailand in brief & the four regions
+• When to go + a month-by-month festival almanac
+• Visas, money & a realistic daily-budget breakdown
+• Driving in Thailand + renting a scooter or car
+• Staying safe & healthy (incl. common scams)
+• Connectivity & the apps worth installing
+• Culture & temple etiquette
+• A proper Thai phrasebook (essentials, numbers, food, emergencies)
+• Eating in Thailand + a region-by-region glossary of dishes
+• Responsible travel + reading/watching to get in the mood
+
+THE ROUTES (with vector maps)
+• Mae Hong Son Loop — a full 7-day, turn-by-turn itinerary
+• The Andaman Coast · Isaan & the Mekong · Bangkok–Kanchanaburi
+
+FILLABLE PLANNING PAGES
+• Bucket list, trip overview, budget, 14-day itinerary grid,
+  stays & reservations log, packing list, daily plans, journal & notes
 
 ━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS
