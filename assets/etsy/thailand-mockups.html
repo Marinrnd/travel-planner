@@ -1,0 +1,66 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Ital';src:url('file:///home/user/travel-planner/assets/fonts/Italiana-Regular.ttf')}
+@font-face{font-family:'LoraI';src:url('file:///home/user/travel-planner/assets/fonts/Lora-Italic.ttf')}
+@font-face{font-family:'Outfit';src:url('file:///home/user/travel-planner/assets/fonts/Outfit-Regular.ttf')}
+@font-face{font-family:'OutfitB';src:url('file:///home/user/travel-planner/assets/fonts/Outfit-Bold.ttf')}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#fff}
+.slide{width:1000px;height:800px;position:relative;overflow:hidden;
+ background:radial-gradient(1200px 700px at 10% -10%, #F6ECDD, transparent 60%),
+            radial-gradient(900px 700px at 105% 110%, #F1E2D2, transparent 55%),
+            linear-gradient(160deg,#FAF7F1,#F3EADB)}
+.pad{position:absolute;inset:0;padding:64px 72px}
+.eyebrow{font-family:'OutfitB';letter-spacing:5px;font-size:13px;color:#B9603F;text-transform:uppercase}
+.the{font-family:'OutfitB';letter-spacing:6px;font-size:13px;color:#7c8a6b;text-transform:uppercase;margin-bottom:14px}
+.h1{font-family:'Ital';font-size:96px;color:#2E2A24;line-height:.96;margin-top:6px}
+.h1 b{color:#B9603F;font-weight:normal;font-size:52px;display:block;margin-top:6px}
+.tag{font-family:'LoraI';font-size:23px;color:#8C8478;margin-top:24px}
+.chips{display:flex;flex-wrap:wrap;gap:11px;margin-top:30px;max-width:420px}
+.chip{font-family:'Outfit';font-size:14px;color:#3a352d;background:rgba(255,255,255,.6);border:1px solid #E2DACE;border-radius:999px;padding:8px 15px}
+.badge{position:absolute;top:54px;right:64px;width:120px;height:120px;border-radius:50%;background:linear-gradient(150deg,#C2613F,#A24E32);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:0 16px 40px -10px rgba(185,96,63,.6);transform:rotate(8deg)}
+.badge b{font-family:'Ital';font-size:26px}.badge span{font-family:'OutfitB';font-size:9px;letter-spacing:1.5px;margin-top:3px}
+.fan{position:absolute;right:-20px;top:150px;width:560px;height:600px}
+.page{position:absolute;border-radius:6px;box-shadow:0 30px 60px -18px rgba(60,40,25,.4);border:1px solid #ece3d4}
+.page img{width:100%;display:block;border-radius:6px}
+.title2{font-family:'Ital';font-size:60px;color:#2E2A24}
+.grid{position:absolute;left:72px;right:72px;top:220px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px 28px}
+.cell .frame{border-radius:5px;overflow:hidden;box-shadow:0 16px 34px -14px rgba(60,40,25,.35);border:1px solid #ece3d4}
+.cell img{width:100%;display:block}
+.cell p{font-family:'OutfitB';letter-spacing:1.4px;text-transform:uppercase;font-size:10.5px;color:#8C8478;margin-top:11px;text-align:center}
+</style></head><body>
+
+<div class="slide" id="s1">
+ <div class="badge"><b>฿</b><span>INSTANT<br>DOWNLOAD</span></div>
+ <div class="pad">
+  <div class="the">The Slow Atlas · Guidebook</div>
+  <div class="h1">Thailand<b>Road Trip Atlas</b></div>
+  <div class="tag">Legendary routes, slowly travelled.</div>
+  <div class="chips">
+   <div class="chip">✦ 18 pages</div><div class="chip">Mae Hong Son Loop, day by day</div>
+   <div class="chip">Vector route maps</div><div class="chip">Food, phrases & etiquette</div>
+   <div class="chip">Fillable planning pages</div><div class="chip">US Letter + A4</div>
+  </div>
+ </div>
+ <div class="fan">
+  <div class="page" style="width:300px;left:170px;top:20px;transform:rotate(6deg)"><img src="file:///tmp/thpg/p9.png"></div>
+  <div class="page" style="width:300px;left:70px;top:0px;transform:rotate(-5deg)"><img src="file:///tmp/thpg/p3.png"></div>
+  <div class="page" style="width:310px;left:120px;top:120px;transform:rotate(1deg)"><img src="file:///tmp/thpg/p1.png"></div>
+ </div>
+</div>
+
+<div class="slide" id="s2">
+ <div class="pad" style="padding-bottom:0">
+  <div class="eyebrow">Eighteen pages</div>
+  <div class="title2">Everything for the open road</div>
+ </div>
+ <div class="grid">
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p3.png"></div><p>Overview Map</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p4.png"></div><p>When to Go</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p9.png"></div><p>The Loop</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p10.png"></div><p>Day by Day</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p13.png"></div><p>Food Guide</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p14.png"></div><p>Bucket List</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p15.png"></div><p>Budget</p></div>
+  <div class="cell"><div class="frame"><img src="file:///tmp/thpg/p16.png"></div><p>Packing</p></div>
+ </div>
+</div>
+</body></html>
