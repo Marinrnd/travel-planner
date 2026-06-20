@@ -6,7 +6,7 @@ Listing images: `dist/thailand-mockups/`
 ---
 
 ## Title
-> Thailand Travel Guide & Road Trip Itinerary | Printable + Fillable PDF | Mae Hong Son Loop, Maps, Budget & Packing | Instant Download
+> Thailand Travel Guide & Road Trip Itinerary | Printable + Fillable PDF | Itineraries, Budget, Maps & Phrasebook | Instant Download
 
 ## Tags (13)
 ```
@@ -25,27 +25,18 @@ Legendary routes, slowly travelled.
 A road-tripper's companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports. Part guidebook, part planner — with vector route maps, a full day-by-day Mae Hong Son Loop, and pages to make the trip your own.
 
 ━━━━━━━━━━━━━━━━━━━━
-WHAT'S INSIDE · 35 pages
-
-THE GUIDE
-• Thailand in brief & the four regions
-• When to go + a month-by-month festival almanac
-• Visas, money & a realistic daily-budget breakdown
-• Driving in Thailand + renting a scooter or car
-• Staying safe & healthy (incl. common scams)
-• Connectivity & the apps worth installing
-• Culture & temple etiquette
-• A proper Thai phrasebook (essentials, numbers, food, emergencies)
-• Eating in Thailand + a region-by-region glossary of dishes
-• Responsible travel + reading/watching to get in the mood
-
-THE ROUTES (with vector maps)
-• Mae Hong Son Loop — a full 7-day, turn-by-turn itinerary
-• The Andaman Coast · Isaan & the Mekong · Bangkok–Kanchanaburi
-
-FILLABLE PLANNING PAGES
-• Bucket list, trip overview, budget, 14-day itinerary grid,
-  stays & reservations log, packing list, daily plans, journal & notes
+WHAT'S INSIDE · 34 pages (a complete illustrated guide)
+• Introduction & how to travel Thailand slowly
+• Before you go — when to visit, documents, health & what to pack
+• Budget — what it really costs, with a sample 2-week breakdown
+• Destinations — Bangkok, Chiang Mai & the North, the South & islands, and beyond
+• 3 ready-to-use itineraries — 10 days North, 12 days Islands, 14 days Best-of
+• Getting around — flights, trains, ferries, driving & scooters
+• Where to stay — types, prices & where to base yourself
+• Food & drink — how to eat, plus a region-by-region dish glossary
+• Activities & experiences, responsible travel
+• Culture & etiquette, safety & scams, and a Thai phrasebook
+• Hand-drawn maps & illustrations throughout
 
 ━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS

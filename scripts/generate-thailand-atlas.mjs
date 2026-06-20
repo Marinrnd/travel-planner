@@ -1,9 +1,9 @@
 /**
- * The Slow Atlas — Thailand Road Trip Atlas (Deluxe Edition)
- * A comprehensive, densely-packed travel ebook (PDF): full practical guide,
- * four detailed road-trip routes, a day-by-day Mae Hong Son Loop, phrasebook,
- * dish glossary, festivals, responsible travel, and many fillable planning
- * pages. Generates US Letter + A4 editions.
+ * The Slow Atlas — Thailand: The Complete Guide
+ * A rich, magazine-style travel ebook (no planner pages — pure guide).
+ * Hand-drawn vector illustrations, section dividers, detailed destinations,
+ * ready-to-use itineraries, transport, stays, food, activities, practical
+ * tips and a phrasebook. Generates US Letter + A4.
  *
  * Run: npm run thailand
  */
@@ -25,64 +25,90 @@ const fb = {
 };
 
 const paper = rgb(0.984, 0.969, 0.945), ink = rgb(0.176, 0.165, 0.141);
-const sub = rgb(0.5, 0.475, 0.43), hair = rgb(0.866, 0.835, 0.788);
+const sub = rgb(0.5, 0.475, 0.43), hair = rgb(0.864, 0.832, 0.785);
 const panel = rgb(0.953, 0.933, 0.898), terra = rgb(0.725, 0.376, 0.247);
 const sage = rgb(0.443, 0.498, 0.376), blue = rgb(0.357, 0.471, 0.529);
 const ochre = rgb(0.78, 0.6, 0.27), white = rgb(1, 1, 1);
 
-let doc, W, H, M, CW, form, PAGE, D, SF, SB, SI, SN, NB;
-let nameCounter = 0;
-const uid = (b) => `${b}_${nameCounter++}`;
+let doc, W, H, M, CW, PAGE, D, SF, SB, SI, SN, NB;
 
-const text = (p, s, x, y, { size = 11, font = SN, color = ink, opacity = 1 } = {}) =>
-  p.drawText(s, { x, y, size, font, color, opacity });
-function tracked(p, s, x, y, { size = 9, font = NB, color = sub, tracking = 1.5 } = {}) {
-  let cx = x; for (const ch of s) { p.drawText(ch, { x: cx, y, size, font, color }); cx += font.widthOfTextAtSize(ch, size) + tracking; } return cx - x - tracking;
-}
+// ---------- text ----------
+const text = (p, s, x, y, { size = 11, font = SN, color = ink, opacity = 1 } = {}) => p.drawText(s, { x, y, size, font, color, opacity });
+function tracked(p, s, x, y, { size = 9, font = NB, color = sub, tracking = 1.5 } = {}) { let cx = x; for (const ch of s) { p.drawText(ch, { x: cx, y, size, font, color }); cx += font.widthOfTextAtSize(ch, size) + tracking; } return cx - x - tracking; }
 const trackedW = (s, { size = 9, font = NB, tracking = 1.5 } = {}) => { let w = 0; for (const ch of s) w += font.widthOfTextAtSize(ch, size) + tracking; return w - tracking; };
 const center = (p, s, y, { size = 11, font = SN, color = ink } = {}) => p.drawText(s, { x: (W - font.widthOfTextAtSize(s, size)) / 2, y, size, font, color });
 const trackedCenter = (p, s, y, o = {}) => tracked(p, s, (W - trackedW(s, o)) / 2, y, o);
-
 function para(p, s, x, y, w, { size = 10, font = SF, color = ink, leading = 14 } = {}) {
   let line = "", yy = y;
-  for (const word of s.split(" ")) {
-    const t = line ? line + " " + word : word;
-    if (font.widthOfTextAtSize(t, size) > w) { text(p, line, x, yy, { size, font, color }); yy -= leading; line = word; }
-    else line = t;
-  }
-  if (line) { text(p, line, x, yy, { size, font, color }); yy -= leading; }
-  return yy;
+  for (const word of s.split(" ")) { const t = line ? line + " " + word : word; if (font.widthOfTextAtSize(t, size) > w) { text(p, line, x, yy, { size, font, color }); yy -= leading; line = word; } else line = t; }
+  if (line) { text(p, line, x, yy, { size, font, color }); yy -= leading; } return yy;
 }
-function bullets(p, items, x, y, w, { accent = terra, gap = 4, size = 10, leading = 13.5 } = {}) {
-  let yy = y;
-  for (const it of items) { p.drawCircle({ x: x + 2.2, y: yy + 3.2, size: 1.7, color: accent }); yy = para(p, it, x + 11, yy, w - 11, { size, leading }) - gap; }
-  return yy;
-}
-// inline "term desc" with wrapping — great for glossaries, phrases, dish lists
+function bullets(p, items, x, y, w, { accent = terra, gap = 4, size = 10, leading = 13.5 } = {}) { let yy = y; for (const it of items) { p.drawCircle({ x: x + 2.2, y: yy + 3.2, size: 1.7, color: accent }); yy = para(p, it, x + 11, yy, w - 11, { size, leading }) - gap; } return yy; }
 function entry(p, term, desc, x, y, w, { size = 10, leading = 14 } = {}) {
-  let cx = x, yy = y;
-  p.drawText(term, { x: cx, y: yy, size, font: SB, color: ink });
-  cx += SB.widthOfTextAtSize(term, size) + 5;
-  for (const word of desc.split(" ")) {
-    const ww = SF.widthOfTextAtSize(word + " ", size);
-    if (cx + ww > x + w) { yy -= leading; cx = x; }
-    p.drawText(word, { x: cx, y: yy, size, font: SF, color: sub }); cx += ww;
-  }
-  return yy - leading;
+  let cx = x, yy = y; p.drawText(term, { x: cx, y: yy, size, font: SB, color: ink }); cx += SB.widthOfTextAtSize(term, size) + 5;
+  for (const word of desc.split(" ")) { const ww = SF.widthOfTextAtSize(word + " ", size); if (cx + ww > x + w) { yy -= leading; cx = x; } p.drawText(word, { x: cx, y: yy, size, font: SF, color: sub }); cx += ww; } return yy - leading;
 }
 function subhead(p, s, x, y, accent = terra) { tracked(p, s.toUpperCase(), x, y, { size: 8.5, font: NB, color: accent, tracking: 1.8 }); return y - 18; }
-
 const hline = (p, x1, x2, y, { thickness = 0.7, color = hair } = {}) => p.drawLine({ start: { x: x1, y }, end: { x: x2, y }, thickness, color });
 const paperBg = (p) => p.drawRectangle({ x: 0, y: 0, width: W, height: H, color: paper });
-function globe(p, cx, cy, r, color = terra, w = 1) {
-  p.drawCircle({ x: cx, y: cy, size: r, borderColor: color, borderWidth: w, color: undefined });
-  p.drawEllipse({ x: cx, y: cy, xScale: r * 0.421, yScale: r, borderColor: color, borderWidth: w, color: undefined });
-  hline(p, cx - r, cx + r, cy, { thickness: w, color });
-  const dy = r * 0.447, hw = r * 0.724;
-  hline(p, cx - hw, cx + hw, cy + dy, { thickness: w, color }); hline(p, cx - hw, cx + hw, cy - dy, { thickness: w, color });
+
+// ---------- vector illustration kit ----------
+function arc(p, cx, cy, rx, ry, a0, a1, { color = ink, w = 1, seg = 26 } = {}) { let prev = null; for (let i = 0; i <= seg; i++) { const a = a0 + (a1 - a0) * i / seg; const pt = { x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) }; if (prev) p.drawLine({ start: prev, end: pt, thickness: w, color }); prev = pt; } }
+const poly = (p, pts, { color = ink, w = 1, close = false } = {}) => { for (let i = 0; i < pts.length - 1; i++) p.drawLine({ start: pts[i], end: pts[i + 1], thickness: w, color }); if (close) p.drawLine({ start: pts.at(-1), end: pts[0], thickness: w, color }); };
+
+function mountains(p, x, baseY, w, h, c, ww = 1) {
+  const pk = [[0, 0], [0.16, 0.7], [0.3, 0.25], [0.46, 1], [0.62, 0.4], [0.78, 0.85], [0.9, 0.45], [1, 0.6]];
+  poly(p, pk.map(([fx, fy]) => ({ x: x + fx * w, y: baseY + fy * h })), { color: c, w: ww });
 }
+function temple(p, cx, baseY, s, c, ww = 1) {
+  // three-tier Lanna roof + spire
+  for (let i = 0; i < 3; i++) { const tw = (1 - i * 0.22) * s, ty = baseY + 0.5 * s + i * 0.34 * s; poly(p, [{ x: cx - tw / 2, y: ty }, { x: cx, y: ty + 0.34 * s }, { x: cx + tw / 2, y: ty }], { color: c, w: ww }); hline(p, cx - tw / 2, cx + tw / 2, ty, { thickness: ww, color: c }); }
+  p.drawLine({ start: { x: cx, y: baseY + 1.52 * s }, end: { x: cx, y: baseY + 1.85 * s }, thickness: ww, color: c });
+  poly(p, [{ x: cx - 0.4 * s, y: baseY }, { x: cx - 0.4 * s, y: baseY + 0.5 * s }], { color: c, w: ww });
+  poly(p, [{ x: cx + 0.4 * s, y: baseY }, { x: cx + 0.4 * s, y: baseY + 0.5 * s }], { color: c, w: ww });
+  hline(p, cx - 0.46 * s, cx + 0.46 * s, baseY, { thickness: ww, color: c });
+}
+function palm(p, x, baseY, s, c, ww = 1) {
+  arc(p, x - 0.5 * s, baseY + s, 0.5 * s, s, 0, Math.PI / 2, { color: c, w: ww, seg: 12 }); // curved trunk
+  const top = { x: x, y: baseY + s };
+  for (const a of [150, 110, 70, 30, -5]) { const r = 0.9 * s; arc(p, top.x, top.y, r, r * 0.5, (a - 22) * Math.PI / 180, (a + 22) * Math.PI / 180, { color: c, w: ww, seg: 8 }); }
+}
+function longtail(p, cx, y, s, c, ww = 1) {
+  arc(p, cx, y + 0.55 * s, s, 0.55 * s, Math.PI, 2 * Math.PI, { color: c, w: ww, seg: 22 }); // hull
+  hline(p, cx - s, cx + s, y + 0.55 * s, { thickness: ww, color: c });
+  poly(p, [{ x: cx - 0.2 * s, y: y + 0.55 * s }, { x: cx - 0.2 * s, y: y + 1.1 * s }, { x: cx + 0.35 * s, y: y + 1.1 * s }, { x: cx + 0.35 * s, y: y + 0.55 * s }], { color: c, w: ww }); // cabin
+  poly(p, [{ x: cx + 0.9 * s, y: y + 0.55 * s }, { x: cx + 1.7 * s, y: y + 1.25 * s }], { color: c, w: ww }); // long-tail pole
+}
+function bowl(p, cx, y, s, c, ww = 1) {
+  arc(p, cx, y + 0.5 * s, s, 0.5 * s, Math.PI, 2 * Math.PI, { color: c, w: ww, seg: 20 });
+  hline(p, cx - s * 1.06, cx + s * 1.06, y + 0.5 * s, { thickness: ww, color: c });
+  for (const dx of [-0.35, 0, 0.35]) arc(p, cx + dx * s, y + 0.85 * s, 0.12 * s, 0.22 * s, -Math.PI / 2, Math.PI / 2, { color: c, w: ww, seg: 8 }); // steam
+  poly(p, [{ x: cx + 0.5 * s, y: y + 1.0 * s }, { x: cx + 1.2 * s, y: y + 1.5 * s }], { color: c, w: ww }); // chopsticks
+  poly(p, [{ x: cx + 0.62 * s, y: y + 0.96 * s }, { x: cx + 1.3 * s, y: y + 1.42 * s }], { color: c, w: ww });
+}
+function lantern(p, cx, y, s, c, ww = 1) {
+  hline(p, cx - 0.35 * s, cx + 0.35 * s, y + s, { thickness: ww, color: c });
+  arc(p, cx, y + 0.5 * s, 0.5 * s, 0.5 * s, 0, 2 * Math.PI, { color: c, w: ww, seg: 26 });
+  poly(p, [{ x: cx, y: y + s }, { x: cx, y: y + 1.2 * s }], { color: c, w: ww });
+  for (const dx of [-0.12, 0, 0.12]) poly(p, [{ x: cx + dx * s, y: y - 0.02 * s }, { x: cx + dx * s, y: y - 0.35 * s }], { color: c, w: ww });
+}
+function sun(p, cx, cy, r, c, ww = 1) { arc(p, cx, cy, r, r, 0, 2 * Math.PI, { color: c, w: ww, seg: 30 }); }
+
+// horizontal landscape band to fill page bottoms
+function sceneBand(p, yBase, { c = hair } = {}) {
+  hline(p, M, W - M, yBase, { thickness: 0.8, color: c });
+  mountains(p, M, yBase, CW * 0.5, 46, c, 0.9);
+  sun(p, M + CW * 0.42, yBase + 40, 9, terra, 0.9);
+  temple(p, M + CW * 0.62, yBase, 34, c, 0.9);
+  palm(p, M + CW * 0.8, yBase, 26, sage, 0.9);
+  palm(p, M + CW * 0.88, yBase, 20, sage, 0.9);
+  longtail(p, M + CW * 0.2, yBase + 4, 16, blue, 0.9);
+}
+
+// ---------- furniture ----------
+const newPage = () => { const p = doc.addPage([W, H]); paperBg(p); return p; };
 function header(p, num, tag, title, accent = terra) {
-  text(p, num, W - M - D.widthOfTextAtSize(num, 60), H - M - 54, { size: 60, font: D, color: accent, opacity: 0.15 });
+  text(p, num, W - M - D.widthOfTextAtSize(num, 58), H - M - 52, { size: 58, font: D, color: accent, opacity: 0.15 });
   tracked(p, tag.toUpperCase(), M, H - M - 13, { size: 8.5, font: NB, color: accent, tracking: 2.2 });
   text(p, title, M, H - M - 44, { size: 25, font: D, color: ink });
   hline(p, M, W - M, H - M - 58, { thickness: 0.8 });
@@ -95,590 +121,423 @@ function footer(p, label) {
   center(p, `— ${String(PAGE).padStart(2, "0")} —`, 31, { size: 8, font: SN, color: sub });
   PAGE++;
 }
-function field(p, x, y, w, { label = null, size = 11 } = {}) {
-  if (label) tracked(p, label.toUpperCase(), x, y + 16, { size: 7.5, font: NB, color: sub, tracking: 1.5 });
-  hline(p, x, x + w, y - 2, { thickness: 0.8, color: hair });
-  const tf = form.createTextField(uid("f")); tf.addToPage(p, { x: x + 2, y, width: w - 4, height: 15, borderWidth: 0, backgroundColor: paper, font: SN }); tf.setFontSize(size);
+function pageW(num, tag, title, accent, render, label, { band = true } = {}) {
+  const p = newPage(); header(p, num, tag, title, accent);
+  const endY = render(p, H - M - 88);
+  if (band && endY && endY > 96) sceneBand(p, 70);
+  footer(p, label || title);
 }
-function panelField(p, x, y, w, h, { label = null } = {}) {
-  if (label) tracked(p, label.toUpperCase(), x, y + h + 6, { size: 7.5, font: NB, color: sub, tracking: 1.5 });
-  p.drawRectangle({ x, y, width: w, height: h, color: panel, borderColor: hair, borderWidth: 0.8 });
-  const tf = form.createTextField(uid("f")); tf.enableMultiline(); tf.addToPage(p, { x: x + 8, y: y + 6, width: w - 16, height: h - 12, borderWidth: 0, backgroundColor: panel, font: SN }); tf.setFontSize(11);
-}
-function checkRow(p, x, y, label, w, accent = terra) {
-  const cb = form.createCheckBox(uid("c")); cb.addToPage(p, { x, y, width: 11, height: 11, borderWidth: 1, borderColor: accent });
-  if (label) text(p, label, x + 21, y, { size: 10, font: SF, color: ink });
-  hline(p, x + 21, x + w, y - 4, { thickness: 0.5 });
-}
-// generic table
 function table(p, x, y, cols, rows, { headerColor = terra, rowH = 20, fontSize = 9.5 } = {}) {
-  let cx = x;
-  cols.forEach((c) => { tracked(p, c.h.toUpperCase(), cx, y, { size: 7.5, font: NB, color: headerColor, tracking: 1.2 }); cx += c.w; });
-  let yy = y - 8; hline(p, x, x + cols.reduce((a, c) => a + c.w, 0), yy, { thickness: 0.8 }); yy -= 16;
-  for (const row of rows) {
-    cx = x;
-    row.forEach((cell, i) => { para(p, cell, cx, yy, cols[i].w - 8, { size: fontSize, font: i === 0 ? SB : SF, color: i === 0 ? ink : sub, leading: 12 }); cx += cols[i].w; });
-    yy -= rowH; hline(p, x, x + cols.reduce((a, c) => a + c.w, 0), yy + 8, { thickness: 0.4 });
-  }
+  let cx = x; cols.forEach((c) => { tracked(p, c.h.toUpperCase(), cx, y, { size: 7.5, font: NB, color: headerColor, tracking: 1.2 }); cx += c.w; });
+  let yy = y - 8; const tw = cols.reduce((a, c) => a + c.w, 0); hline(p, x, x + tw, yy, { thickness: 0.8 }); yy -= 16;
+  for (const row of rows) { cx = x; row.forEach((cell, i) => { para(p, cell, cx, yy, cols[i].w - 8, { size: fontSize, font: i === 0 ? SB : SF, color: i === 0 ? ink : sub, leading: 12 }); cx += cols[i].w; }); yy -= rowH; hline(p, x, x + tw, yy + 8, { thickness: 0.4 }); }
   return yy;
 }
-const newPage = () => { const p = doc.addPage([W, H]); paperBg(p); return p; };
-function pageW(num, tag, title, accent, render, label) { const p = newPage(); header(p, num, tag, title, accent); render(p, H - M - 88); footer(p, label || title); }
-
 function drawMap(p, bx, by, bw, bh, nodes, routes) {
   const px = (nx) => bx + nx * bw, py = (ny) => by + ny * bh;
-  for (const r of routes) {
-    const pts = r.keys.map((k) => nodes.find((n) => n.key === k)).filter(Boolean);
-    for (let i = 0; i < pts.length - 1; i++) p.drawLine({ start: { x: px(pts[i].x), y: py(pts[i].y) }, end: { x: px(pts[i + 1].x), y: py(pts[i + 1].y) }, thickness: 1.6, color: r.color });
-    if (r.loop && pts.length > 1) p.drawLine({ start: { x: px(pts.at(-1).x), y: py(pts.at(-1).y) }, end: { x: px(pts[0].x), y: py(pts[0].y) }, thickness: 1.6, color: r.color });
-  }
+  for (const r of routes) { const pts = r.keys.map((k) => nodes.find((n) => n.key === k)).filter(Boolean); for (let i = 0; i < pts.length - 1; i++) p.drawLine({ start: { x: px(pts[i].x), y: py(pts[i].y) }, end: { x: px(pts[i + 1].x), y: py(pts[i + 1].y) }, thickness: 1.6, color: r.color }); if (r.loop && pts.length > 1) p.drawLine({ start: { x: px(pts.at(-1).x), y: py(pts.at(-1).y) }, end: { x: px(pts[0].x), y: py(pts[0].y) }, thickness: 1.6, color: r.color }); }
   for (const n of nodes) { p.drawCircle({ x: px(n.x), y: py(n.y), size: n.big ? 4 : 2.6, color: n.big ? terra : ink }); text(p, n.name, px(n.x) + (n.lx ?? 7), py(n.y) + (n.ly ?? -3), { size: n.big ? 9 : 8, font: n.big ? NB : SN, color: ink }); }
 }
 
-// ============================ PAGES ============================
+// ---------- big pages ----------
 function cover() {
   const p = newPage(); const pad = 38;
   p.drawRectangle({ x: pad, y: pad, width: W - pad * 2, height: H - pad * 2, borderColor: ink, borderWidth: 1, color: undefined });
   p.drawRectangle({ x: pad + 5, y: pad + 5, width: W - (pad + 5) * 2, height: H - (pad + 5) * 2, borderColor: hair, borderWidth: 0.6, color: undefined });
-  trackedCenter(p, "THE SLOW ATLAS", H - 138, { size: 9, font: NB, color: terra, tracking: 5 });
-  globe(p, W / 2, H - 232, 30, terra, 1);
-  center(p, "Thailand", H / 2 + 40, { size: 70, font: D, color: ink });
-  center(p, "Road Trip Atlas", H / 2 - 14, { size: 40, font: D, color: terra });
-  hline(p, W / 2 - 66, W / 2 + 66, H / 2 - 40, { thickness: 0.8, color: ink });
-  center(p, "The complete guide & planner — legendary routes, slowly travelled.", H / 2 - 70, { size: 13, font: SI, color: sub });
-  trackedCenter(p, "4 ROUTES  ·  ITINERARIES  ·  PHRASEBOOK  ·  FOOD  ·  PLANNING PAGES", 232, { size: 8, font: NB, color: sub, tracking: 2 });
+  trackedCenter(p, "THE SLOW ATLAS", H - 132, { size: 9, font: NB, color: terra, tracking: 5 });
+  center(p, "Thailand", H - 250, { size: 78, font: D, color: ink });
+  center(p, "The Complete Guide", H - 292, { size: 34, font: D, color: terra });
+  hline(p, W / 2 - 70, W / 2 + 70, H - 316, { thickness: 0.8, color: ink });
+  center(p, "Where to go, what to eat, and how to travel it slowly.", H - 342, { size: 13, font: SI, color: sub });
+  // hero scene
+  const yB = 188;
+  mountains(p, M + 30, yB, CW - 60, 80, hair, 1);
+  sun(p, W / 2, yB + 92, 16, terra, 1.1);
+  temple(p, W / 2, yB, 60, ink, 1);
+  palm(p, M + 70, yB, 44, sage, 1); palm(p, W - M - 80, yB, 40, sage, 1);
+  longtail(p, M + 120, yB - 6, 26, blue, 1);
   trackedCenter(p, "A SLOW ATLAS GUIDE  ·  VOLUME I", 150, { size: 8.5, font: NB, color: terra, tracking: 3 });
 }
-
-function contents() {
-  pageW("00", "Welcome", "What's inside", sage, (p, y0) => {
-    let y = para(p, "This is a road-tripper's companion to Thailand — written for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports. It is two books in one: a practical guide to doing Thailand well, and a planner to make the trip your own.", M, y0, CW, { leading: 15 });
-    y -= 10;
-    const colW = CW / 2 - 14;
-    const left = [
-      ["The Guide", terra],
-      ["Thailand in brief", ""], ["The four regions", ""], ["When to go & festivals", ""],
-      ["Visas, money & costs", ""], ["Driving in Thailand", ""], ["Renting a scooter or car", ""],
-      ["Staying safe & healthy", ""], ["Connectivity & apps", ""], ["Culture & etiquette", ""],
-      ["A Thai phrasebook", ""], ["Eating in Thailand", ""], ["A glossary of dishes", ""],
-    ];
-    const right = [
-      ["The Routes & Planner", terra],
-      ["The four great routes", ""], ["Mae Hong Son Loop (7 days)", ""], ["The Andaman Coast", ""],
-      ["Isaan & the North-East", ""], ["Bangkok – Kanchanaburi", ""], ["Responsible travel", ""],
-      ["Inspiration & reading", ""],
-      ["— Fillable —", sage], ["Bucket list · Trip overview", ""], ["Budget · Itinerary grid", ""],
-      ["Stays · Packing · Daily plan", ""], ["Journal & notes", ""],
-    ];
-    const render = (col, x) => {
-      let yy = y - 6;
-      for (const [t, c] of col) {
-        if (c) { yy = subhead(p, t, x, yy, c) - 2; }
-        else { p.drawCircle({ x: x + 2, y: yy + 3, size: 1.6, color: hair }); text(p, t, x + 11, yy, { size: 10.5, font: SF, color: ink }); yy -= 17; }
-      }
-    };
-    render(left, M); render(right, M + CW / 2 + 14);
-  }, "Contents");
+function intro() {
+  pageW("", "Welcome", "Sawatdee — welcome", terra, (p, y0) => {
+    let y = para(p, "There is nowhere quite like Thailand. In a single trip you can wake to mist over northern mountains, ride a scooter past golden temples, eat the best meal of your life from a plastic stool on a side-street, and fall asleep to waves on a southern shore. It is dazzling, warm, deeply hospitable — and wonderfully easy to travel.", M, y0, CW, { leading: 15.5 }) - 8;
+    y = para(p, "This guide is written for the traveller who wants more than a checklist. It is built to help you travel slowly and well: to understand the country, plan with confidence, and leave room for the unplanned afternoons that become the best memories.", M, y0 = y, CW, { leading: 15.5 }) - 14;
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "How this guide is arranged", M, y);
+    yl = bullets(p, ["Before you go — timing, documents, health and what to pack.", "Budget — what Thailand really costs, with sample spends.", "Destinations — the unmissable places, region by region.", "Ready-to-use itineraries — 10 to 14 days, planned for you.", "Getting around & where to stay.", "Food, activities, practical tips and a phrasebook."], M, yl, colW, { accent: terra });
+    let yr = subhead(p, "How to travel it slowly", x2, y, sage);
+    yr = bullets(p, ["Choose one or two regions, not all four.", "Build in empty days — Thailand rewards lingering.", "Eat where the locals queue; say yes to the unfamiliar.", "Learn ten words of Thai; you'll be met with warmth.", "Move by day, on the ground, to see the country in between."], x2, yr, colW, { accent: sage });
+    return Math.min(yl, yr);
+  }, "Welcome");
+}
+function divider(num, kicker, title, subtitle, art, accent = terra) {
+  const p = newPage(); const pad = 44;
+  p.drawRectangle({ x: pad, y: pad, width: W - pad * 2, height: H - pad * 2, borderColor: hair, borderWidth: 0.6, color: undefined });
+  text(p, num, W / 2 - D.widthOfTextAtSize(num, 150) / 2, H / 2 + 40, { size: 150, font: D, color: accent, opacity: 0.12 });
+  trackedCenter(p, kicker.toUpperCase(), H / 2 + 150, { size: 9, font: NB, color: accent, tracking: 4 });
+  center(p, title, H / 2 + 96, { size: 46, font: D, color: ink });
+  hline(p, W / 2 - 50, W / 2 + 50, H / 2 + 76, { thickness: 0.8, color: accent });
+  center(p, subtitle, H / 2 + 48, { size: 13, font: SI, color: sub });
+  art(p, W / 2, H / 2 - 150);
+  trackedCenter(p, "THE SLOW ATLAS", 70, { size: 8, font: NB, color: sub, tracking: 3 });
 }
 
-function inBrief() {
-  pageW("01", "Orientation", "Thailand in brief", terra, (p, y0) => {
-    const colW = CW / 2 - 16; let yl = y0, yr = y0;
-    yl = subhead(p, "The land", M, yl);
-    yl = para(p, "Thailand sits at the heart of mainland South-East Asia — roughly the size of France, and shaped a little like an elephant's head. From the cool, folded mountains of the north it stretches 1,650 km south down a slender peninsula of jungle and islands between two seas: the Gulf of Thailand to the east, the Andaman to the west.", M, yl, colW, { leading: 13.5 }) - 8;
-    yl = subhead(p, "A quick history", M, yl);
-    yl = para(p, "The kingdom of Siam was never colonised — a point of deep national pride. The Thai monarchy is revered (and protected by law), Theravada Buddhism shapes daily life, and the result is a culture that is at once relaxed and quietly formal.", M, yl, colW, { leading: 13.5 }) - 8;
-    yl = subhead(p, "Why drive it", M, yl);
-    yl = bullets(p, ["Freedom to reach villages, viewpoints and waterfalls the buses skip.", "Roads are good, fuel is cheap, and the scenery is the attraction.", "You set the pace — the essence of slow travel."], M, yl, colW, { accent: terra });
-
-    const x2 = M + CW / 2 + 16;
-    yr = subhead(p, "The essentials", x2, yr);
-    const facts = [["Capital", "Bangkok (Krung Thep)"], ["Population", "≈71 million"], ["Language", "Thai (English widely used in tourism)"], ["Religion", "Theravada Buddhism (≈93%)"], ["Currency", "Thai baht (THB)"], ["Drives on", "The LEFT"], ["Plugs", "Type A / B / C · 230V"], ["Time zone", "GMT +7 (no daylight saving)"], ["Calling code", "+66"], ["Best months", "November – February"]];
-    for (const [k, v] of facts) { text(p, k, x2, yr, { size: 9.5, font: NB, color: ink }); text(p, v, x2 + 92, yr, { size: 9.5, font: SF, color: sub }); hline(p, x2, x2 + colW, yr - 6, { thickness: 0.4 }); yr -= 21; }
-    yr -= 8; yr = subhead(p, "Five quick wins", x2, yr, sage);
-    yr = bullets(p, ["Carry cash in small notes.", "Learn 'sawatdee' and 'khop khun'.", "Always agree taxi/tuk-tuk prices first.", "Dress modestly at temples.", "Smile — it's the national language."], x2, yr, colW, { accent: sage });
-  }, "In Brief");
+// ---- destination page (two columns + highlights + band) ----
+function destination(num, name, accent, lead, mustSee, practical, eat, label) {
+  pageW(num, "Destinations", name, accent, (p, y0) => {
+    let y = para(p, lead, M, y0, CW, { leading: 15 }) - 10;
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; const top = y;
+    let yl = subhead(p, "Don't miss", M, top, accent);
+    yl = bullets(p, mustSee, M, yl, colW, { accent });
+    let yr = subhead(p, "Good to know", x2, top, sage);
+    yr = bullets(p, practical, x2, yr, colW, { accent: sage });
+    let yy = Math.min(yl, yr) - 10;
+    yy = subhead(p, "Eat & drink here", M, yy, terra);
+    yy = bullets(p, eat, M, yy, CW, { accent: terra, size: 9.8 });
+    return yy;
+  }, label || name);
 }
 
-function regions1() {
-  pageW("02", "The country", "The four regions · I", blue, (p, y0) => {
-    const blocks = [
-      ["The North", terra, "Chiang Mai · Chiang Rai · Pai · Mae Hong Son", "Cool mountains, hill-tribe cultures, ornate Lanna temples and the country's best road trips. Slower, greener and gentler than the south — and the spiritual home of this atlas. Don't miss: khao soi, the Mae Hong Son Loop, and the Yi Peng lantern festival.", ["Cooler climate, especially Nov–Feb", "Lanna culture & Burmese influence", "Trekking, waterfalls, coffee country"]],
-      ["The Centre", blue, "Bangkok · Ayutthaya · Kanchanaburi · Hua Hin", "The flat, fertile rice bowl and the beating heart of the kingdom. Frenetic Bangkok, the romantic ruins of old Ayutthaya, the River Kwai, and easy weekend escapes. The gateway most journeys begin from.", ["Thailand's transport hub", "Ancient capitals & royal history", "Floating markets & big-city energy"]],
-    ];
-    let y = y0;
-    for (const [name, accent, places, desc, tags] of blocks) {
-      p.drawRectangle({ x: M, y: y - 96, width: 3, height: 108, color: accent });
-      text(p, name, M + 16, y, { size: 18, font: D, color: ink });
-      tracked(p, places.toUpperCase(), M + 16, y - 18, { size: 7.5, font: NB, color: accent, tracking: 1.2 });
-      const ey = para(p, desc, M + 16, y - 36, CW * 0.62 - 16, { leading: 13.5 });
-      let ty = y - 36;
-      for (const t of tags) { p.drawCircle({ x: M + CW * 0.66, y: ty + 3, size: 1.6, color: accent }); text(p, t, M + CW * 0.66 + 9, ty, { size: 9, font: SF, color: sub }); ty -= 15; }
-      y = Math.min(ey, ty) - 24;
-    }
-  }, "Regions");
-}
-function regions2() {
-  pageW("02", "The country", "The four regions · II", sage, (p, y0) => {
-    const blocks = [
-      ["Isaan (North-East)", sage, "Khorat · Phimai · Ubon · Nong Khai · the Mekong", "The vast plateau few visitors see — and all the richer for it. Khmer temples older than Angkor, silk-weaving villages, the mighty Mekong, fiery food and the warmest welcome in Thailand. Wonderfully cheap and gloriously authentic.", ["Khmer ruins & Lao-influenced culture", "Som tam, larb & sticky rice", "Big skies, slow villages"]],
-      ["The South", ochre, "Phuket · Krabi · Khao Sok · Koh Lanta · the islands", "Postcard Thailand: limestone karsts rising from turquoise seas, rainforest national parks, and beaches for every mood. Two coasts mean there's almost always somewhere dry — when one side rains, cross to the other.", ["Andaman & Gulf coasts", "Diving, kayaking, island-hopping", "Richer, spicier southern curries"]],
-    ];
-    let y = y0;
-    for (const [name, accent, places, desc, tags] of blocks) {
-      p.drawRectangle({ x: M, y: y - 96, width: 3, height: 108, color: accent });
-      text(p, name, M + 16, y, { size: 18, font: D, color: ink });
-      tracked(p, places.toUpperCase(), M + 16, y - 18, { size: 7.5, font: NB, color: accent, tracking: 1.2 });
-      const ey = para(p, desc, M + 16, y - 36, CW * 0.62 - 16, { leading: 13.5 });
-      let ty = y - 36;
-      for (const t of tags) { p.drawCircle({ x: M + CW * 0.66, y: ty + 3, size: 1.6, color: accent }); text(p, t, M + CW * 0.66 + 9, ty, { size: 9, font: SF, color: sub }); ty -= 15; }
-      y = Math.min(ey, ty) - 24;
-    }
-    y -= 4;
-    p.drawRectangle({ x: M, y: y - 30, width: CW, height: 42, color: panel, borderColor: hair, borderWidth: 0.8 });
-    tracked(p, "SLOW ATLAS TIP", M + 12, y, { size: 8, font: NB, color: terra, tracking: 1.8 });
-    para(p, "Don't try to 'do' all four regions in one trip. Pick one or two and travel them slowly — Thailand rewards depth far more than distance.", M + 12, y - 15, CW - 24, { size: 9.5, font: SI, color: ink, leading: 13 });
-  }, "Regions");
+// ---- itinerary page ----
+function itinerary(num, title, accent, intro, nodes, keys, days, label, loop = false) {
+  const p = newPage(); header(p, num, "Ready-to-use itineraries", title, accent);
+  let y = para(p, intro, M, H - M - 88, CW * 0.56, { leading: 14 });
+  drawMap(p, M + CW * 0.6, 150, CW * 0.4, H - M - 110 - 150, nodes, [{ color: accent, keys, loop }]);
+  text(p, "Schematic — not to scale", M + CW * 0.6, 132, { size: 7.5, font: SI, color: sub });
+  y -= 8;
+  for (const [d, t, body] of days) { text(p, d, M, y, { size: 9.5, font: NB, color: accent }); text(p, t, M + 56, y, { size: 11, font: SB, color: ink }); y = para(p, body, M, y - 14, CW * 0.56, { size: 9.3, leading: 12.5 }) - 7; }
+  footer(p, label);
 }
 
+// ============================ CONTENT ============================
 function whenToGo() {
-  pageW("03", "Timing", "When to go & festivals", ochre, (p, y0) => {
-    let y = para(p, "Choosing the right window matters more in Thailand than almost anywhere. There are three broad seasons — and the north and south often run on different clocks.", M, y0, CW, { leading: 14 }) - 6;
-    const seasons = [["Cool & dry", "Nov – Feb", sage, "The sweet spot: comfortable days, clear skies, cool hill evenings. Peak season — book ahead."], ["Hot", "Mar – May", ochre, "Fierce heat; Mar–Apr brings haze to the north. Songkran (mid-Apr) is a joyous water-fight new year."], ["Green & wet", "Jun – Oct", blue, "Warm monsoon — short, heavy afternoon bursts. Lush, quiet and cheap. The south's Andaman side is wettest."]];
-    for (const [n, w, a, d] of seasons) {
-      p.drawRectangle({ x: M, y: y - 30, width: 3, height: 42, color: a });
-      text(p, n, M + 14, y, { size: 12, font: SB, color: ink }); tracked(p, w.toUpperCase(), M + 14, y - 16, { size: 8, font: NB, color: a, tracking: 1.3 });
-      para(p, d, M + 150, y + 1, CW - 150, { size: 9.5, leading: 13 }); y -= 50;
-    }
-    y -= 6; y = subhead(p, "A month-by-month almanac", M, y, terra);
+  pageW("01", "Before you go", "When to go", ochre, (p, y0) => {
+    let y = para(p, "Choosing the right window matters more in Thailand than almost anywhere — and the north and south often run on different clocks.", M, y0, CW, { leading: 14 }) - 6;
+    const seasons = [["Cool & dry", "Nov – Feb", sage, "The sweet spot: comfortable days, clear skies, cool hill evenings. Peak season — book ahead, especially over New Year."], ["Hot", "Mar – May", ochre, "Fierce heat (35–40°C). Mar–Apr brings crop-burning haze to the north. Songkran (13–15 Apr) is a nationwide water-fight new year."], ["Green & wet", "Jun – Oct", blue, "Warm monsoon — short, heavy afternoon bursts rather than all-day rain. Lush, quiet and cheap; the Andaman coast is wettest."]];
+    for (const [n, w, a, d] of seasons) { p.drawRectangle({ x: M, y: y - 32, width: 3, height: 44, color: a }); text(p, n, M + 14, y, { size: 12.5, font: SB, color: ink }); tracked(p, w.toUpperCase(), M + 14, y - 16, { size: 8, font: NB, color: a, tracking: 1.3 }); para(p, d, M + 150, y + 1, CW - 150, { size: 9.5, leading: 13 }); y -= 52; }
+    y -= 4; y = subhead(p, "A month-by-month almanac", M, y, terra);
     const half = CW / 2 - 10;
-    const rowsL = [["Jan", "Cool, dry, perfect", "Peak season"], ["Feb", "Warm, dry", "Chiang Mai Flower Fest."], ["Mar", "Hot, northern haze", "—"], ["Apr", "Hottest month", "Songkran (water new year)"], ["May", "Hot, first rains", "Low season begins"], ["Jun", "Warm, wet spells", "Green & cheap"]];
-    const rowsR = [["Jul", "Monsoon", "Asalha Puja / Buddhist Lent"], ["Aug", "Wettest in places", "Quiet, lush"], ["Sep", "Heavy rains", "Lowest prices"], ["Oct", "Rains ease", "Vegetarian Festival"], ["Nov", "Cool & dry returns", "Loy Krathong / Yi Peng"], ["Dec", "Cool, dry, busy", "High season"]];
     const cols = [{ h: "Month", w: half * 0.22 }, { h: "Weather", w: half * 0.42 }, { h: "Don't miss", w: half * 0.36 }];
-    table(p, M, y, cols, rowsL, { rowH: 18, fontSize: 9 });
-    table(p, M + CW / 2 + 10, y, cols.map(c => ({ ...c })), rowsR, { rowH: 18, fontSize: 9 });
-  }, "When to Go");
+    const L = [["Jan", "Cool, dry, ideal", "Peak season"], ["Feb", "Warm, dry", "Chiang Mai Flower Fest."], ["Mar", "Hot, northern haze", "Sea & islands shine"], ["Apr", "Hottest", "Songkran water festival"], ["May", "Hot, first rains", "Low season begins"], ["Jun", "Warm, wet spells", "Green & cheap"]];
+    const R = [["Jul", "Monsoon", "Asalha Puja / Lent"], ["Aug", "Wettest in places", "Quiet, lush north"], ["Sep", "Heavy rains", "Lowest prices"], ["Oct", "Rains ease", "Vegetarian Festival"], ["Nov", "Cool, dry returns", "Loy Krathong / Yi Peng"], ["Dec", "Cool, dry, busy", "High season"]];
+    table(p, M, y, cols, L, { rowH: 18, fontSize: 9 });
+    table(p, M + CW / 2 + 10, y, cols.map((c) => ({ ...c })), R, { rowH: 18, fontSize: 9 });
+    return 100;
+  }, "When to Go", { band: false });
 }
-
-function visasMoney() {
-  pageW("04", "Practical", "Visas, money & costs", terra, (p, y0) => {
+function documents() {
+  pageW("02", "Before you go", "Documents, health & money", terra, (p, y0) => {
     const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
     yl = subhead(p, "Entry & visas", M, yl);
-    yl = bullets(p, ["Many nationalities (incl. EU, UK, US, Australia) enter visa-free for short stays — the exact length changes, so confirm the current rule before you fly.", "Your passport must be valid 6+ months beyond arrival.", "You may be asked for proof of onward travel and funds.", "Overstaying carries a daily fine — don't risk it."], M, yl, colW, { accent: terra }) - 6;
-    yl = subhead(p, "Money basics", M, yl);
-    yl = bullets(p, ["The baht (THB) is cash-first outside cities — carry small notes.", "ATMs are everywhere but charge ≈THB 220 per foreign withdrawal; take larger amounts, less often.", "Cards work in malls, hotels and chains; markets and stalls are cash only.", "Tell your bank you're travelling; carry a backup card."], M, yl, colW, { accent: terra });
+    yl = bullets(p, ["Many nationalities (EU, UK, US, Australia, Canada…) enter visa-free for short stays — the exact number of days changes, so confirm the current rule for your passport before you fly.", "Passport valid 6+ months beyond arrival, with blank pages.", "Have proof of onward travel and accommodation ready.", "Longer stays / multiple entries: apply for the right visa in advance.", "Never overstay — fines are charged per day at the airport."], M, yl, colW, { accent: terra }) - 4;
+    yl = subhead(p, "Health & vaccinations", M, yl, sage);
+    yl = bullets(p, ["See a travel clinic 6–8 weeks ahead for current advice.", "Routine jabs up to date; Hepatitis A & typhoid commonly advised.", "Dengue is mosquito-borne — repellent dusk & dawn, no vaccine for travellers.", "Comprehensive travel insurance is essential — and it MUST cover motorbikes if you'll ride.", "Tap water isn't safe to drink; bottled or filtered only."], M, yl, colW, { accent: sage });
 
-    yr = subhead(p, "What it costs (per day, per person)", x2, yr, sage);
-    const cols = [{ h: "Style", w: colW * 0.34 }, { h: "Approx / day", w: colW * 0.34 }, { h: "Looks like", w: colW * 0.32 }];
-    const rows = [["Backpacker", "THB 900–1,500", "Hostels, street food, scooters"], ["Comfort", "THB 2,500–4,500", "Nice guesthouses, some flights"], ["Boutique", "THB 6,000+", "Design hotels, drivers, spas"]];
-    yr = table(p, x2, yr, cols, rows, { rowH: 22, fontSize: 9 }) - 8;
-    yr = subhead(p, "Rough prices to anchor on", x2, yr, sage);
-    yr = bullets(p, ["Street meal: THB 50–80", "Local beer: THB 70–100", "Scooter hire: THB 200–300/day", "Litre of petrol: ≈THB 40", "Guesthouse double: THB 600–1,200", "Long-distance train: THB 200–900"], x2, yr, colW, { accent: sage });
-    yr -= 6; tracked(p, "TIPPING", x2, yr, { size: 8, font: NB, color: terra, tracking: 1.6 });
-    para(p, "Not expected, but rounding up or leaving THB 20–50 is a kind gesture.", x2, yr - 14, colW, { size: 9.5, font: SI, color: sub, leading: 12.5 });
-  }, "Visas & Money");
+    yr = subhead(p, "Money", x2, yr, blue);
+    yr = bullets(p, ["The baht (THB) is cash-first outside cities; carry small notes.", "ATMs everywhere but charge ≈THB 220 per foreign withdrawal — take more, less often.", "Cards work in malls, hotels and chains; markets are cash only.", "Tell your bank you're travelling; bring a backup card kept separately.", "Tipping isn't expected; rounding up is a kind gesture."], x2, yr, colW, { accent: blue }) - 4;
+    yr = subhead(p, "Connectivity", x2, yr, ochre);
+    yr = bullets(p, ["Buy a tourist SIM (AIS, TrueMove, dtac) at the airport, or an eSIM before you fly.", "Data is fast and cheap; coverage is excellent outside the deep mountains.", "Save offline maps for road trips."], x2, yr, colW, { accent: ochre });
+    return 100;
+  }, "Documents", { band: false });
 }
-
-function driving() {
-  pageW("05", "On the road", "Driving in Thailand", blue, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "The non-negotiables", M, yl);
-    yl = bullets(p, ["Carry an International Driving Permit (IDP) plus your home licence — police checkpoints are common and your insurance depends on it.", "Drive on the LEFT. The unwritten rule is 'give way to bigger' — buses and trucks rule.", "Helmets are mandatory on scooters (and life-saving). Wear closed shoes.", "Avoid night driving: unlit vehicles, animals and potholes."], M, yl, colW, { accent: blue }) - 6;
-    yl = subhead(p, "Checkpoints & police", M, yl);
-    yl = bullets(p, ["Routine stops are normal — be calm and polite, show IDP + licence.", "Small on-the-spot fines for minor infractions happen; ask for a receipt.", "Keep digital and paper copies of your documents."], M, yl, colW, { accent: blue });
-
-    yr = subhead(p, "Roads & navigation", x2, yr, sage);
-    yr = bullets(p, ["Highways are good; mountain roads are narrow and twisty but paved.", "Fuel stations (PTT, Bangchak) are frequent — but fill up before remote stretches.", "Download offline maps (Google offline or Maps.me); signal drops in the hills.", "Petrol stops often have clean toilets, Café Amazon coffee and a 7-Eleven."], x2, yr, colW, { accent: sage }) - 6;
-    yr = subhead(p, "If something goes wrong", x2, yr, terra);
-    yr = bullets(p, ["Stay at the scene; call 1669 (ambulance) or 191 (police) if needed.", "Photograph everything for insurance before moving vehicles.", "Tourist Police (English): 1155.", "Your travel insurance must explicitly cover motorbikes."], x2, yr, colW, { accent: terra });
-    yr -= 4; p.drawRectangle({ x: x2, y: yr - 26, width: colW, height: 38, color: panel, borderColor: hair, borderWidth: 0.8 });
-    para(p, "Confidence on two wheels? The north is bliss. Not sure? Hire a small car — air-con is a gift in the heat.", x2 + 10, yr - 4, colW - 20, { size: 9, font: SI, color: ink, leading: 12 });
-  }, "Driving");
-}
-
-function renting() {
-  pageW("06", "On the road", "Renting a scooter or car", sage, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "Scooter / motorbike", M, yl, terra);
-    yl = para(p, "The classic way to ride the northern loops — cheap (≈THB 200–300/day) and freeing. For mountains, choose a 150cc+ (semi-) automatic; a 125cc struggles on steep grades two-up.", M, yl, colW, { leading: 13 }) - 6;
-    yl = subhead(p, "Before you ride off — check", M, yl);
-    yl = bullets(p, ["Brakes, tyres, lights and horn all work.", "Photograph every existing scratch with the owner.", "A helmet that actually fits (bring your own if fussy).", "Never hand over your passport as deposit — pay cash instead.", "Fuel level — return it as you got it."], M, yl, colW, { accent: sage });
-
-    yr = subhead(p, "Car hire", x2, yr, blue);
-    yr = para(p, "Safer for families and the rainy season. From ≈THB 900–1,400/day. International desks (Avis, Budget, local firms) sit at every major airport. Book ahead in high season.", x2, yr, colW, { leading: 13 }) - 6;
-    yr = subhead(p, "Insurance — read this", x2, yr, terra);
-    yr = bullets(p, ["Take the fullest cover offered; understand the excess.", "Photograph the car all round before leaving the lot.", "Your home/credit-card insurance rarely covers Thailand — check.", "For scooters, most travel policies need a valid motorcycle licence + IDP to pay out."], x2, yr, colW, { accent: terra });
-    yr -= 6; yr = subhead(p, "Apps that help", x2, yr, sage);
-    yr = bullets(p, ["Grab — taxis & food when you'd rather not drive.", "Google Maps (download offline regions).", "Bolt — ride-hailing in big cities."], x2, yr, colW, { accent: sage });
-  }, "Renting");
-}
-
-function safety() {
-  pageW("07", "Look after yourself", "Staying safe & healthy", terra, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "Health", M, yl, sage);
-    yl = bullets(p, ["Tap water isn't drinkable — buy big bottles or carry a filter. Ice in cafés is generally fine.", "Eat where locals queue and food is cooked fresh and hot.", "Pack rehydration salts, plasters, antiseptic, anti-diarrhoeals and your own meds.", "Mosquito repellent (DEET) dusk & dawn; consider it for dengue, not just comfort.", "Check vaccination advice with a travel clinic 6–8 weeks ahead."], M, yl, colW, { accent: sage }) - 6;
-    yl = subhead(p, "Emergency numbers", M, yl, terra);
-    yl = bullets(p, ["Police 191 · Ambulance 1669", "Tourist Police (English) 1155", "Tourist info (TAT) 1672"], M, yl, colW, { accent: terra });
-
-    yr = subhead(p, "Common scams — smile & decline", x2, yr, ochre);
-    yr = bullets(p, ["'The temple/palace is closed today' — it isn't; the tout has a gem shop to show you.", "Tuk-tuk 'tours' for almost nothing — they detour to commission stops.", "Rigged taxi meters — insist on the meter or agree a price first.", "Jet-ski / scooter 'damage' claims — photograph everything at pickup.", "Over-friendly strangers with card games or 'free' drinks."], x2, yr, colW, { accent: ochre }) - 6;
-    yr = subhead(p, "Sensible & safe", x2, yr, blue);
-    yr = bullets(p, ["Thailand is generally very safe; petty theft is the main risk.", "Use hotel safes; keep a card and some cash separate.", "Women travel widely and easily — usual night-time common sense applies.", "Respect the sea: heed red flags and rip-current warnings."], x2, yr, colW, { accent: blue });
-  }, "Safety & Health");
-}
-
-function connectivity() {
-  pageW("08", "Stay connected", "Connectivity & apps", blue, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "Getting online", M, yl);
-    yl = bullets(p, ["Buy a tourist SIM (AIS, TrueMove, dtac) at the airport, or load an eSIM before you fly.", "Data is fast, generous and cheap (tourist packs from ≈THB 200).", "4G/5G coverage is excellent — except deep in the mountains, hence offline maps.", "Most cafés and guesthouses have free Wi-Fi."], M, yl, colW, { accent: blue });
-
-    yr = subhead(p, "Apps worth installing", x2, yr, sage);
-    const apps = [["Grab", "rides + food delivery"], ["Google Maps", "with offline regions saved"], ["Google Translate", "Thai pack + camera mode"], ["Bolt", "ride-hailing in cities"], ["XE / a currency app", "quick baht conversions"], ["Klook", "tickets & day tours"], ["12Go", "trains, buses, ferries"], ["LINE", "how Thais message"]];
-    let yy = yr; for (const [a, d] of apps) { yy = entry(p, a, "— " + d, x2, yy, colW, { size: 10, leading: 15 }); }
-  }, "Connectivity");
-}
-
-function culture() {
-  pageW("09", "Respect", "Culture & etiquette", sage, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "Do", M, yl, sage);
-    yl = bullets(p, ["Return a 'wai' (palms together) with a smile.", "Dress modestly at temples — shoulders and knees covered.", "Remove shoes before entering homes and temples.", "Keep calm; a smile defuses almost anything.", "Use your right hand (or both) to give and receive."], M, yl, colW, { accent: sage }) - 6;
-    yl = subhead(p, "Don't", M, yl, terra);
-    yl = bullets(p, ["Touch anyone's head — even a child's.", "Point your feet at people or Buddha images.", "Raise your voice or show anger ('losing face').", "Disrespect the monarchy — it's against the law.", "Step over food or people sitting on the floor."], M, yl, colW, { accent: terra });
-
-    yr = subhead(p, "At the temple (wat)", x2, yr, blue);
-    yr = bullets(p, ["Cover up, remove shoes and hat, lower your voice.", "Women should not touch monks or hand things directly to them.", "Sit with feet tucked behind you, not pointing at the Buddha.", "A small donation for upkeep is welcome."], x2, yr, colW, { accent: blue }) - 6;
-    yr = subhead(p, "Good to understand", x2, yr, ochre);
-    yr = para(p, "'Sanuk' (fun) and 'jai yen' (a cool heart) are guiding ideas: Thais value good humour and composure. 'Mai pen rai' — never mind, it's fine — is a whole philosophy. Match the easy warmth you're shown and doors open everywhere.", x2, yr, colW, { leading: 13.5 });
-  }, "Culture");
-}
-
-function phrasebook() {
-  pageW("10", "Language", "A Thai phrasebook", terra, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
-    let yl = subhead(p, "Essentials", M, y0);
-    const ess = [["Hello", "sawatdee (khrap/kha)"], ["Thank you", "khop khun (khrap/kha)"], ["Yes / No", "chai / mai chai"], ["Please", "karuna"], ["Sorry / excuse me", "khor thot"], ["You're welcome", "mai pen rai"], ["Do you speak English?", "phut angkrit dai mai?"], ["I don't understand", "mai khao jai"]];
-    for (const [a, b] of ess) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 14 });
-    yl -= 4; yl = subhead(p, "Getting around", M, yl, blue);
-    const go = [["Where is…?", "…yu thi nai?"], ["How much?", "tao rai?"], ["Too expensive", "phaeng pai"], ["Turn left / right", "liao sai / liao khwa"], ["Stop here", "jort thi ni"], ["Petrol station", "pam nam man"]];
-    for (const [a, b] of go) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 14 });
-
-    let yr = subhead(p, "Numbers", x2, y0, sage);
-    const nums = "1 nung · 2 song · 3 sam · 4 si · 5 ha · 6 hok · 7 jet · 8 paet · 9 kao · 10 sip · 20 yi-sip · 100 nung roi · 1,000 nung phan";
-    yr = para(p, nums, x2, yr, colW, { size: 9.5, leading: 14 }) - 6;
-    yr = subhead(p, "At the table", x2, yr, ochre);
-    const food = [["Delicious!", "aroi!"], ["Not spicy, please", "mai phet"], ["A little spicy", "phet nit noi"], ["Vegetarian", "mangsawirat / jay"], ["No fish sauce", "mai sai nam pla"], ["The bill, please", "check bin"], ["Water", "nam plao"], ["Cheers!", "chon kaew!"]];
-    for (const [a, b] of food) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14 });
-    yr -= 4; yr = subhead(p, "Emergencies", x2, yr, terra);
-    const em = [["Help!", "chuay duay!"], ["Hospital", "rong phayaban"], ["Police", "tamruat"], ["I'm lost", "chan long thang"]];
-    for (const [a, b] of em) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14 });
-    hline(p, M, W - M, 70); text(p, "Men end sentences politely with 'khrap', women with 'kha'. Thai is tonal — say it with a smile and you'll be understood.", M, 58, { size: 9, font: SI, color: sub });
-  }, "Phrasebook");
-}
-
-function eating() {
-  pageW("11", "Eat well", "Eating in Thailand", ochre, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "How street food works", M, yl);
-    yl = bullets(p, ["The best meals come from carts and tiny shophouses — follow the crowds of locals.", "Many stalls cook one dish brilliantly; point if you can't pronounce it.", "Sit, eat, pay after. A bowl of noodles is THB 50–80.", "Markets cluster at dawn and dusk — go hungry."], M, yl, colW, { accent: ochre }) - 6;
-    yl = subhead(p, "Spice & how to order", M, yl, terra);
-    yl = bullets(p, ["'Mai phet' = not spicy; 'phet nit noi' = a little. Thai 'a little' is still a lot.", "Condiments on the table: fish sauce, chilli, sugar, vinegar — season to taste.", "Rice ('khao') is the centre of every meal."], M, yl, colW, { accent: terra });
-
-    yr = subhead(p, "Vegetarian & allergies", x2, yr, sage);
-    yr = bullets(p, ["'Mangsawirat' = vegetarian; 'jay' = strict vegan (no garlic/onion), look for the yellow-red 'เจ' flag.", "Fish sauce and shrimp paste hide everywhere — say 'mai sai nam pla / mai sai kapi'.", "Peanuts are common; carry a translation card for serious allergies."], x2, yr, colW, { accent: sage }) - 6;
-    yr = subhead(p, "Drinks to try", x2, yr, blue);
-    yr = bullets(p, ["Cha yen — sweet orange iced tea.", "Nam manao — fresh lime soda.", "Fresh fruit shakes (ask 'mai sai nam tan' for no sugar).", "Singha, Chang & Leo — the local beers, served very cold.", "Roadside coffee — Café Amazon is everywhere."], x2, yr, colW, { accent: blue });
-    text(p, "Turn the page for a region-by-region glossary of what to order.", M, 58, { size: 9.5, font: SI, color: sub });
-  }, "Eating");
-}
-
-function dishes() {
-  pageW("11", "Eat well", "A glossary of dishes", terra, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
-    let yl = subhead(p, "The North", M, y0, terra);
-    const north = [["Khao soi", "the crowning dish — egg noodles in a coconut-curry broth, crisp noodles on top"], ["Sai ua", "herby grilled Chiang Mai sausage"], ["Nam prik num", "smoky green-chilli dip with sticky rice & veg"], ["Gaeng hang lay", "rich Burmese-style pork curry"], ["Khanom jeen", "fermented rice noodles with curry"]];
-    for (const [a, b] of north) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 2;
-    yl -= 4; yl = subhead(p, "Central & Bangkok", M, yl, blue);
-    const central = [["Pad krapow", "holy-basil stir-fry with a fried egg — the nation's comfort food"], ["Tom yum goong", "hot-and-sour prawn soup"], ["Pad thai", "the famous wok noodles"], ["Khao man gai", "Hainanese chicken & rice"], ["Massaman", "mild, fragrant curry of Persian roots"]];
-    for (const [a, b] of central) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 2;
-
-    let yr = subhead(p, "Isaan (North-East)", x2, y0, sage);
-    const isaan = [["Som tam", "pounded green-papaya salad — order 'nit noi phet'!"], ["Larb", "zingy minced-meat salad with herbs & toasted rice"], ["Gai yang", "marinated grilled chicken"], ["Sai krok Isan", "sour fermented pork sausage"], ["Khao niao", "sticky rice — eaten by hand with everything"]];
-    for (const [a, b] of isaan) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 13.5 }) - 2;
-    yr -= 4; yr = subhead(p, "The South & sweets", x2, yr, ochre);
-    const south = [["Gaeng tai pla", "intense southern fish-curry — for the brave"], ["Khao yam", "herbal rice salad"], ["Massaman / seafood", "coconut-rich curries, fresh from the sea"], ["Mango sticky rice", "khao niao mamuang — the dessert"], ["Roti", "griddled banana-and-egg pancake, street-side"]];
-    for (const [a, b] of south) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 13.5 }) - 2;
-  }, "Dishes");
-}
-
-function routesOverview() {
-  pageW("12", "The journeys", "The four great routes", blue, (p, y0) => {
-    // map left
-    const nodes = [
-      { key: "cnx", name: "Chiang Mai", x: 0.45, y: 0.93, big: true }, { key: "pai", name: "Pai", x: 0.34, y: 0.99 },
-      { key: "mhs", name: "Mae Hong Son", x: 0.16, y: 0.9, lx: -78, ly: 4 }, { key: "bkk", name: "Bangkok", x: 0.5, y: 0.5, big: true },
-      { key: "kan", name: "Kanchanaburi", x: 0.33, y: 0.53, lx: -86 }, { key: "kyai", name: "Khao Yai", x: 0.62, y: 0.56 },
-      { key: "isn", name: "Isaan", x: 0.78, y: 0.66, lx: 6 }, { key: "krabi", name: "Krabi", x: 0.42, y: 0.13 },
-      { key: "phuket", name: "Phuket", x: 0.34, y: 0.1, lx: -44 },
-    ];
-    const routes = [{ color: terra, keys: ["cnx", "pai", "mhs", "cnx"], loop: false }, { color: blue, keys: ["bkk", "krabi", "phuket"] }, { color: sage, keys: ["bkk", "kyai", "isn"] }, { color: ochre, keys: ["bkk", "kan"] }];
-    drawMap(p, M + 30, 150, CW * 0.42, H - M - 110 - 150, nodes, routes);
-    text(p, "Schematic — not to scale", M + 30, 132, { size: 8, font: SI, color: sub });
-    // table right
-    const x2 = M + CW * 0.5; const tw = CW * 0.5;
-    let y = y0;
-    const cols = [{ h: "Route", w: tw * 0.34 }, { h: "Days", w: tw * 0.16 }, { h: "Best for", w: tw * 0.5 }];
-    const rows = [["1 · Mae Hong Son Loop", "5–7", "Mountains, villages, the classic ride"], ["2 · Andaman Coast", "5–8", "Beaches, karsts, island-hopping"], ["3 · Isaan & Mekong", "6–9", "Khmer ruins, food, the road less travelled"], ["4 · Bangkok–Kanchanaburi", "3–4", "Waterfalls, history, an easy first trip"]];
-    y = table(p, x2, y, cols, rows, { rowH: 30, fontSize: 9 }) - 10;
-    y = subhead(p, "Pick your pace", x2, y, sage);
-    para(p, "Short on time? Combine route 4 with a few Bangkok days. Two weeks? The Mae Hong Son Loop plus the north. A month? Link the north to the islands by an internal flight and drive both ends.", x2, y, tw - 6, { leading: 13.5 });
-  }, "Routes");
-}
-
-function loopIntro() {
-  pageW("13", "Route 1", "The Mae Hong Son Loop", terra, (p, y0) => {
-    const nodes = [
-      { key: "cnx", name: "Chiang Mai", x: 0.62, y: 0.5, big: true, lx: 9 }, { key: "pai", name: "Pai", x: 0.4, y: 0.86, big: true },
-      { key: "mhs", name: "Mae Hong Son", x: 0.14, y: 0.66, big: true, lx: -94 }, { key: "khun", name: "Khun Yuam", x: 0.18, y: 0.4 },
-      { key: "sariang", name: "Mae Sariang", x: 0.26, y: 0.16, lx: -76 }, { key: "chaem", name: "Mae Chaem", x: 0.52, y: 0.2 }, { key: "inth", name: "Doi Inthanon", x: 0.66, y: 0.3, lx: 9 },
-    ];
-    drawMap(p, M + CW * 0.5, 150, CW * 0.5, H - M - 96 - 150, nodes, [{ color: terra, keys: ["cnx", "pai", "mhs", "khun", "sariang", "chaem", "inth", "cnx"], loop: true }]);
-    const tx = M, tw = CW * 0.46;
-    let y = para(p, "Thailand's most loved drive traces a great circle through the north-western mountains from Chiang Mai — famous for its 1,864 marked curves (there's a sticker to prove you survived them).", tx, y0, tw, { leading: 14 }) - 8;
-    y = para(p, "But the joy is in going slowly: dawn mist pooling in the valleys, roadside coffee, waterfalls, hot springs, and Shan-culture towns that feel a world away from Bangkok.", tx, y, tw, { leading: 14 }) - 10;
-    y = subhead(p, "At a glance", tx, y);
-    const facts = [["Distance", "≈600 km"], ["Duration", "5–7 days (we suggest 7)"], ["Start / end", "Chiang Mai"], ["Direction", "Anti-clockwise (Pai first)"], ["Vehicle", "Scooter 150cc+ or small car"], ["Season", "Nov – Feb"], ["Don't miss", "Tham Lod cave, Doi Inthanon"]];
-    for (const [k, v] of facts) { text(p, k, tx, y, { size: 9.5, font: NB, color: ink }); text(p, v, tx + 86, y, { size: 9.5, font: SF, color: sub }); hline(p, tx, tx + tw, y - 6, { thickness: 0.4 }); y -= 21; }
-  }, "Mae Hong Son Loop");
-}
-
-function dayCard(p, x, y, w, day, accent) {
-  p.drawRectangle({ x, y: y - day.h, width: w, height: day.h + 14, color: white, borderColor: hair, borderWidth: 0.8 });
-  p.drawRectangle({ x, y: y - day.h, width: 3, height: day.h + 14, color: accent });
-  tracked(p, day.no.toUpperCase(), x + 14, y - 2, { size: 8, font: NB, color: accent, tracking: 1.6 });
-  text(p, day.title, x + 14, y - 20, { size: 13, font: SB, color: ink });
-  text(p, day.leg, x + w - 14 - SN.widthOfTextAtSize(day.leg, 9), y - 18, { size: 9, font: SN, color: sub });
-  let yy = para(p, day.body, x + 14, y - 38, w - 28, { size: 9.5, font: SF, color: ink, leading: 13 });
-  if (day.eat) { text(p, "Eat — ", x + 14, yy - 2, { size: 9, font: NB, color: terra }); para(p, day.eat, x + 14 + 32, yy - 2, w - 28 - 32, { size: 9, font: SF, color: sub, leading: 12 }); yy -= 15; }
-  if (day.stay) { text(p, "Stay — ", x + 14, yy - 2, { size: 9, font: NB, color: sage }); para(p, day.stay, x + 14 + 36, yy - 2, w - 28 - 36, { size: 9, font: SF, color: sub, leading: 12 }); }
-}
-function loopDays(list, label, tail) {
-  const p = newPage(); header(p, "13", "Route 1 · Day by day", "The Mae Hong Son Loop", terra);
-  let y = H - M - 84;
-  for (const d of list) { dayCard(p, M, y, CW, d, terra); y -= d.h + 26; }
-  if (tail) { y -= 2; tracked(p, tail.h.toUpperCase(), M, y, { size: 8.5, font: NB, color: sage, tracking: 1.8 }); bullets(p, tail.items, M, y - 18, CW, { accent: sage }); }
-  footer(p, label);
-}
-
-function simpleRoute(num, tag, title, accent, intro, nodes, routeKeys, days, label) {
-  const p = newPage(); header(p, num, tag, title, accent);
-  let y = para(p, intro, M, H - M - 88, CW * 0.54, { leading: 14 });
-  drawMap(p, M + CW * 0.58, 150, CW * 0.42, H - M - 96 - 150, nodes, [{ color: accent, keys: routeKeys }]);
-  y -= 8; y = subhead(p, "The drive, day by day", M, y, accent);
-  for (const [d, t, body] of days) {
-    text(p, d, M, y, { size: 10, font: NB, color: accent }); text(p, t, M + 52, y, { size: 11, font: SB, color: ink });
-    y = para(p, body, M, y - 15, CW * 0.54, { size: 9.5, leading: 13 }) - 8;
-  }
-  footer(p, label);
-}
-
-function responsible() {
-  pageW("15", "Travel kindly", "Responsible travel", sage, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "Animals", M, yl, terra);
-    yl = bullets(p, ["Don't ride elephants or visit shows. Choose genuine sanctuaries where elephants roam and are never ridden — research before you book.", "Avoid tiger selfies and any 'photo with a drugged animal'.", "Don't feed wild monkeys; secure your food and shiny things."], M, yl, colW, { accent: terra }) - 6;
-    yl = subhead(p, "Communities", M, yl, sage);
-    yl = bullets(p, ["Buy from local markets, family kitchens and village artisans.", "Ask before photographing people, especially hill-tribe elders.", "Learn a few Thai words — it's met with real warmth.", "Hire local guides; spread your spending beyond the resorts."], M, yl, colW, { accent: sage });
-
-    yr = subhead(p, "The planet", x2, yr, blue);
-    yr = bullets(p, ["Refill a bottle — plastic waste is a real problem here.", "Reef-safe sunscreen when you snorkel or dive.", "Never touch or stand on coral; keep your distance from marine life.", "Take tuk-tuks and songthaews; combine errands to cut trips.", "Carry out your litter on remote roads and trails."], x2, yr, colW, { accent: blue }) - 6;
-    yr = subhead(p, "At temples & sacred sites", x2, yr, ochre);
-    yr = bullets(p, ["Dress and behave modestly; never climb on ruins or Buddha images.", "A small donation keeps these places alive.", "Quiet, please — they are places of worship, not just photos."], x2, yr, colW, { accent: ochre });
-    yr -= 6; p.drawRectangle({ x: x2, y: yr - 28, width: colW, height: 40, color: panel, borderColor: hair, borderWidth: 0.8 });
-    para(p, "The slow traveller's creed: take only photos, leave only footprints, and spend where it stays local.", x2 + 10, yr - 6, colW - 20, { size: 9, font: SI, color: ink, leading: 12 });
-  }, "Responsible");
-}
-
-function inspiration() {
-  pageW("16", "Get in the mood", "Inspiration & reading", ochre, (p, y0) => {
-    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
-    yl = subhead(p, "Read before you go", M, yl, terra);
-    const books = [["Sightseeing", "Rattawut Lapcharoensap — luminous Thai short stories"], ["Bangkok 8", "John Burdett — atmospheric crime thriller"], ["The Beach", "Alex Garland — the backpacker myth, for better or worse"], ["Very Thai", "Philip Cornwel-Smith — the brilliant book of everyday culture"], ["Fieldwork", "Mischa Berlinski — the hills of the north"]];
-    for (const [a, b] of books) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 2;
-    yl -= 4; yl = subhead(p, "Watch", M, yl, blue);
-    const films = [["Uncle Boonmee…", "Apichatpong's dreamlike Palme d'Or winner"], ["Only God Forgives", "neon-soaked Bangkok noir"], ["Chef's Table / street-food docs", "for the appetite"]];
-    for (const [a, b] of films) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 2;
-
-    yr = subhead(p, "A glossary of terms", x2, yr, sage);
-    const g = [["wat", "temple"], ["soi", "side-street / lane"], ["songthaew", "shared pick-up taxi"], ["tuk-tuk", "three-wheeled taxi"], ["khao", "rice / hill"], ["nam", "water / river"], ["doi", "mountain (northern)"], ["talat", "market"], ["farang", "foreigner (not rude)"], ["mai pen rai", "never mind, it's fine"], ["sanuk", "fun — a core value"], ["jai yen", "a cool, calm heart"]];
-    for (const [a, b] of g) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 13.5 }) - 2;
-  }, "Inspiration");
-}
-
-// ---------- Fillable planning pages ----------
-function bucketList() {
-  pageW("17", "Plan your trip", "Thailand bucket list", sage, (p) => {
-    center(p, "Tick off the experiences as you go.", H - M - 76, { size: 12, font: SI, color: sub });
-    const items = ["Survive all 1,864 curves of the Mae Hong Son Loop", "Watch dawn mist fill the valley near Pai", "Soak in a natural hot spring after a ride", "Slurp khao soi in Chiang Mai", "Stand on Thailand's roof at Doi Inthanon", "Release a lantern at Yi Peng / Loy Krathong", "Share sticky rice with a hill-tribe family", "Ride a long-tail through Andaman karsts", "Take a Thai cooking class", "Give alms to monks at sunrise", "Temple-hop the ruins of Ayutthaya", "Find an empty beach with no name", "Kayak the jungle lake at Khao Sok", "Eat at a night market until you can't move", "Cross the Mon bridge at Sangkhlaburi", "Learn to say 'aroi!' and mean it"];
-    const colX = [M, M + CW / 2 + 12], colW = CW / 2 - 12; let yy = [H - M - 100, H - M - 100];
-    items.forEach((it, i) => { const c = i % 2; checkRow(p, colX[c], yy[c], it, colW, [terra, sage, blue, ochre][i % 4]); yy[c] -= 28; });
-  }, "Bucket List");
-}
-function tripOverview() {
-  pageW("17", "Plan your trip", "Trip overview", terra, (p, y0) => {
-    const half = (CW - 24) / 2; let y = y0 - 8;
-    field(p, M, y, half, { label: "Trip name" }); field(p, M + half + 24, y, half, { label: "Travellers" }); y -= 54;
-    const t3 = (CW - 48) / 3;
-    field(p, M, y, t3, { label: "Arrive" }); field(p, M + t3 + 24, y, t3, { label: "Depart" }); field(p, M + (t3 + 24) * 2, y, t3, { label: "Nights" }); y -= 54;
-    field(p, M, y, half, { label: "Regions / routes" }); field(p, M + half + 24, y, half, { label: "Total budget" }); y -= 54;
-    field(p, M, y, half, { label: "Flights in / out" }); field(p, M + half + 24, y, half, { label: "Vehicle" }); y -= 70;
-    panelField(p, M, y - 70, CW, 82, { label: "Must-do experiences" }); y -= 100;
-    panelField(p, M, y - 60, CW, 72, { label: "Notes" });
-  }, "Trip Overview");
-}
-function budgetPage() {
-  pageW("17", "Plan your trip", "Trip budget", sage, (p, y0) => {
-    const cats = ["Flights", "Vehicle rental", "Fuel", "Accommodation", "Food & drink", "Activities & tours", "Entry / visa", "SIM & extras", "Shopping", "Buffer"];
-    const colP = M + CW * 0.52, colA = M + CW * 0.77, cwn = CW * 0.2; let y = y0;
-    tracked(p, "CATEGORY", M, y, { size: 8, font: NB, color: sub, tracking: 1.6 }); tracked(p, "PLANNED", colP, y, { size: 8, font: NB, color: sub, tracking: 1.6 }); tracked(p, "ACTUAL", colA, y, { size: 8, font: NB, color: sub, tracking: 1.6 });
-    y -= 12; hline(p, M, W - M, y, { thickness: 0.8 }); y -= 24;
-    for (const c of cats) { text(p, c, M, y, { size: 11.5, font: SF, color: ink }); field(p, colP, y - 2, cwn); field(p, colA, y - 2, cwn); y -= 30; }
-    y -= 2; p.drawRectangle({ x: M - 8, y: y - 10, width: CW + 16, height: 32, color: panel });
-    tracked(p, "TOTAL", M, y, { size: 10, font: NB, color: terra, tracking: 2 }); field(p, colP, y - 2, cwn); field(p, colA, y - 2, cwn);
-  }, "Budget");
-}
-function itineraryGrid() {
-  pageW("17", "Plan your trip", "Itinerary at a glance", blue, (p, y0) => {
-    text(p, "A bird's-eye view of your whole trip — one line per day.", M, y0 + 6, { size: 11, font: SI, color: sub });
-    const cols = [{ h: "Day", w: CW * 0.08 }, { h: "Date", w: CW * 0.16 }, { h: "From – To", w: CW * 0.3 }, { h: "Sleep", w: CW * 0.22 }, { h: "Notes", w: CW * 0.24 }];
-    let y = y0 - 16; let cx = M;
-    cols.forEach((c) => { tracked(p, c.h.toUpperCase(), cx, y, { size: 7.5, font: NB, color: blue, tracking: 1.2 }); cx += c.w; });
-    y -= 8; hline(p, M, W - M, y, { thickness: 0.8 }); y -= 24;
-    for (let i = 0; i < 14; i++) {
-      cx = M; text(p, String(i + 1), M, y, { size: 10, font: SB, color: sub }); cx += cols[0].w;
-      for (let j = 1; j < cols.length; j++) { field(p, cx, y, cols[j].w - 8); cx += cols[j].w; }
-      y -= 38;
-    }
-  }, "Itinerary");
-}
-function staysLog() {
-  pageW("17", "Plan your trip", "Stays & reservations", ochre, (p, y0) => {
-    const cols = [{ h: "Place / town", w: CW * 0.26 }, { h: "Accommodation", w: CW * 0.28 }, { h: "Dates", w: CW * 0.18 }, { h: "Confirmation #", w: CW * 0.28 }];
-    let y = y0; let cx = M;
-    cols.forEach((c) => { tracked(p, c.h.toUpperCase(), cx, y, { size: 7.5, font: NB, color: ochre, tracking: 1.2 }); cx += c.w; });
-    y -= 8; hline(p, M, W - M, y, { thickness: 0.8 }); y -= 24;
-    for (let i = 0; i < 16; i++) { cx = M; for (const c of cols) { field(p, cx, y, c.w - 8); cx += c.w; } y -= 34; }
-  }, "Stays");
-}
-function packingPage() {
-  pageW("17", "Plan your trip", "Packing for Thailand", terra, (p, y0) => {
-    const groups = [["Riding & safety", terra, ["Helmet (or hire a good one)", "Light gloves", "Sunglasses", "Rain poncho", "Closed shoes"]], ["Tropical kit", sage, ["High-SPF, reef-safe sunscreen", "Insect repellent (DEET)", "Reusable water bottle", "Quick-dry clothes", "Sarong / scarf", "Flip-flops"]], ["Health", blue, ["Travel insurance docs", "Rehydration salts", "Basic first-aid kit", "Anti-diarrhoeals", "Hand sanitiser", "Personal meds"]], ["Documents & tech", ochre, ["IDP + driving licence", "Passport + copies", "Offline maps saved", "Power bank", "Universal adapter", "Spare card + cash"]]];
-    const colX = [M, M + CW / 2 + 12], colW = CW / 2 - 12; const startY = y0; let y = startY;
-    groups.forEach(([title, accent, items], gi) => {
-      const col = gi < 2 ? 0 : 1; if (col === 1 && gi === 2) y = startY;
-      const x = colX[col]; tracked(p, title.toUpperCase(), x, y, { size: 9, font: NB, color: accent, tracking: 2 });
-      let yy = y - 20; for (const it of items) { checkRow(p, x, yy, it, colW, accent); yy -= 23; } y = yy - 14;
-    });
+function packing() {
+  pageW("03", "Before you go", "What to pack", sage, (p, y0) => {
+    let y = para(p, "Thailand is hot, humid and casual — pack light, in natural fabrics, and leave room for what you'll buy. Laundry is cheap and everywhere, so a week's worth of clothes is plenty.", M, y0, CW, { leading: 14 }) - 8;
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; const top = y;
+    let yl = subhead(p, "Clothing", M, top, terra);
+    yl = bullets(p, ["Light, loose, quick-dry clothes", "One set covering shoulders & knees (temples)", "A light layer for cool northern evenings & buses", "Swimwear + a sarong (modesty, beach, picnic)", "Comfortable walking sandals + trainers", "A packable rain jacket or poncho"], M, yl, colW, { accent: terra });
+    let yr = subhead(p, "Health & essentials", x2, top, sage);
+    yr = bullets(p, ["High-SPF, reef-safe sunscreen + sun hat", "Insect repellent (DEET) & after-bite", "Small first-aid kit, rehydration salts, your meds", "Hand sanitiser & tissues (not all toilets have paper)", "Universal adapter & power bank", "Refillable water bottle (cut the plastic)"], x2, yr, colW, { accent: sage });
+    let yy = Math.min(yl, yr) - 10;
+    yy = subhead(p, "Documents to carry (paper + digital copies)", M, yy, blue);
+    yy = bullets(p, ["Passport, visa, travel insurance details", "Driving licence + International Driving Permit (if driving)", "Card details / emergency numbers stored offline", "A few passport photos for any on-the-spot paperwork"], M, yy, CW, { accent: blue });
+    return yy;
   }, "Packing");
 }
-function dailyPlan() {
-  pageW("17", "Plan your trip", "Daily plan", sage, (p, y0) => {
-    text(p, "Copy or reprint for each day on the road.", M, y0 + 6, { size: 11, font: SI, color: sub });
-    const half = (CW - 24) / 2; let y = y0 - 24;
-    field(p, M, y, half, { label: "Day / date" }); field(p, M + half + 24, y, half, { label: "Route — from / to" }); y -= 50;
-    const t3 = (CW - 48) / 3;
-    field(p, M, y, t3, { label: "Distance" }); field(p, M + t3 + 24, y, t3, { label: "Driving time" }); field(p, M + (t3 + 24) * 2, y, t3, { label: "Overnight" }); y -= 40;
-    panelField(p, M, y - 92, CW, 104, { label: "Stops & sights along the way" }); y -= 120;
-    panelField(p, M, y - 58, half, 70, { label: "Where to eat" }); panelField(p, M + half + 24, y - 58, half, 70, { label: "Notes & memories" });
-  }, "Daily Plan");
+function budget() {
+  pageW("04", "Budget", "What Thailand costs", terra, (p, y0) => {
+    let y = para(p, "Thailand suits every budget. You can travel beautifully on very little, or indulge for a fraction of European prices. Here's what to expect per person, per day, once you're in the country.", M, y0, CW, { leading: 14 }) - 8;
+    const cols = [{ h: "Style", w: CW * 0.18 }, { h: "Per day", w: CW * 0.2 }, { h: "What it looks like", w: CW * 0.62 }];
+    const rows = [["Backpacker", "THB 900–1,500", "Hostels & fan rooms, street food, scooters, public transport"], ["Comfort", "THB 2,500–4,500", "Smart guesthouses & 3-star hotels, mix of restaurants, some flights & tours"], ["Boutique", "THB 6,000+", "Design hotels & resorts, private drivers, spas, fine dining"]];
+    y = table(p, M, y, cols, rows, { rowH: 26, fontSize: 9.5 }) - 12;
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; const top = y;
+    let yl = subhead(p, "Sample 2-week comfort budget (per person)", M, top, sage);
+    const bcols = [{ h: "Item", w: colW * 0.6 }, { h: "≈ THB", w: colW * 0.4 }];
+    const brows = [["Accommodation (13 nights)", "16,000"], ["Food & drink", "9,000"], ["Transport & 1–2 flights", "7,000"], ["Activities & tours", "6,000"], ["Scooter / car & fuel", "3,500"], ["SIM, extras, buffer", "3,500"]];
+    let yl2 = table(p, M, yl, bcols, brows, { rowH: 18, fontSize: 9, headerColor: sage });
+    text(p, "≈ THB 45,000  ·  roughly €1,150 / £980 / $1,250", M, yl2 - 4, { size: 9.5, font: SB, color: terra });
+    let yr = subhead(p, "Prices to anchor on", x2, top, blue);
+    yr = bullets(p, ["Street meal: THB 50–80", "Restaurant main: THB 120–250", "Local beer: THB 70–100", "Coffee: THB 50–80", "Scooter hire: THB 200–300/day", "Litre of petrol: ≈THB 40", "Guesthouse double: THB 600–1,200", "Domestic flight: THB 1,000–2,500", "Long train (2nd class): THB 200–900", "Day tour: THB 800–1,800"], x2, yr, colW, { accent: blue, gap: 2 });
+    return 96;
+  }, "Budget", { band: false });
 }
-function journalPage() {
-  pageW("17", "Plan your trip", "Travel journal", terra, (p, y0) => {
-    const half = (CW - 24) / 2; let y = y0 - 6;
-    field(p, M, y, half, { label: "Date" }); field(p, M + half + 24, y, half, { label: "Where / mood" }); y -= 44;
-    center(p, "“The journey itself is the reward.”", y - 4, { size: 12, font: SI, color: sub }); y -= 26;
-    panelField(p, M, y - 150, CW, 162, { label: "Today's story" }); y -= 180;
-    panelField(p, M, y - 56, half, 68, { label: "Best bite" }); panelField(p, M + half + 24, y - 56, half, 68, { label: "Discovery" });
-  }, "Journal");
+function regionsMap() {
+  pageW("05", "Destinations", "The lie of the land", blue, (p, y0) => {
+    let y = para(p, "Thailand falls into four broad regions. Don't try to cover them all — choose one or two and travel them slowly.", M, y0, CW * 0.5, { leading: 14 }) - 8;
+    const defs = [["The North", terra, "Mountains, Lanna temples, hill tribes, the best road trips and cool air. Chiang Mai, Pai, Mae Hong Son."], ["The Centre", blue, "Bangkok's energy, ancient Ayutthaya, the River Kwai, beaches at Hua Hin. The hub you'll likely arrive in."], ["Isaan (NE)", sage, "Khmer ruins, silk villages, the Mekong, fiery food, few tourists, big welcomes."], ["The South", ochre, "Two coasts of islands, karsts and rainforest. Phuket, Krabi, Khao Sok, Koh Lanta, the Gulf isles."]];
+    for (const [n, a, d] of defs) { p.drawRectangle({ x: M, y: y - 22, width: 3, height: 34, color: a }); text(p, n, M + 12, y, { size: 12, font: SB, color: ink }); y = para(p, d, M + 12, y - 14, CW * 0.5 - 12, { size: 9.3, leading: 12.5 }) - 9; }
+    const nodes = [
+      { key: "cnx", name: "Chiang Mai", x: 0.42, y: 0.92, big: true }, { key: "pai", name: "Pai", x: 0.3, y: 0.99 },
+      { key: "mhs", name: "Mae Hong Son", x: 0.14, y: 0.9, lx: -78, ly: 4 }, { key: "bkk", name: "Bangkok", x: 0.5, y: 0.5, big: true },
+      { key: "ayu", name: "Ayutthaya", x: 0.46, y: 0.6 }, { key: "kan", name: "Kanchanaburi", x: 0.3, y: 0.54, lx: -84 },
+      { key: "isn", name: "Isaan", x: 0.8, y: 0.66, lx: 6 }, { key: "kyai", name: "Khao Yai", x: 0.62, y: 0.58 },
+      { key: "krabi", name: "Krabi", x: 0.42, y: 0.14 }, { key: "phuket", name: "Phuket", x: 0.33, y: 0.1, lx: -44 }, { key: "samui", name: "Ko Samui", x: 0.58, y: 0.2 },
+    ];
+    drawMap(p, M + CW * 0.56, 130, CW * 0.42, H - M - 110 - 130, nodes, []);
+    text(p, "Schematic — not to scale", M + CW * 0.56, 112, { size: 7.5, font: SI, color: sub });
+    return 96;
+  }, "Regions", { band: false });
 }
-function notesPage() {
-  pageW("17", "Plan your trip", "Notes", blue, (p, y0) => {
-    let y = y0; for (let i = 0; i < 22; i++) { hline(p, M, W - M, y, { thickness: 0.5 }); y -= 26; }
-    const tf = form.createTextField(uid("f")); tf.enableMultiline(); tf.addToPage(p, { x: M, y: y + 8, width: CW, height: y0 - y, borderWidth: 0, backgroundColor: paper, font: SN }); tf.setFontSize(11);
-  }, "Notes");
+
+// ---------- build ----------
+async function buildDoc([w, h]) {
+  doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
+  doc.setTitle("The Slow Atlas — Thailand: The Complete Guide");
+  doc.setAuthor("The Slow Atlas");
+  doc.setSubject("A complete illustrated travel guide to Thailand");
+  doc.setKeywords(["thailand", "travel guide", "ebook", "itinerary", "southeast asia"]);
+  W = w; H = h; M = 50; CW = W - M * 2; PAGE = 2;
+  D = await doc.embedFont(fb.display, { subset: true }); SF = await doc.embedFont(fb.serif, { subset: true });
+  SB = await doc.embedFont(fb.serifB, { subset: true }); SI = await doc.embedFont(fb.serifI, { subset: true });
+  SN = await doc.embedFont(fb.sans, { subset: true }); NB = await doc.embedFont(fb.sansB, { subset: true });
+
+  cover();
+  intro();
+
+  divider("I", "Part One", "Before you go", "Timing, paperwork and packing — sorted.", (p, cx, cy) => { mountains(p, cx - 150, cy - 30, 300, 70, hair, 1); temple(p, cx, cy - 30, 56, ink, 1); sun(p, cx + 110, cy + 30, 13, terra, 1.1); palm(p, cx - 120, cy - 30, 40, sage, 1); }, ochre);
+  whenToGo(); documents(); packing();
+
+  divider("II", "Part Two", "Budget", "What it really costs — and how to travel for less.", (p, cx, cy) => { lantern(p, cx - 70, cy - 10, 30, ochre, 1); lantern(p, cx, cy + 6, 36, terra, 1); lantern(p, cx + 72, cy - 12, 28, sage, 1); }, terra);
+  budget();
+
+  divider("III", "Part Three", "Destinations", "The unmissable places, region by region.", (p, cx, cy) => { mountains(p, cx - 160, cy - 30, 320, 80, hair, 1); temple(p, cx - 80, cy - 30, 48, ink, 1); palm(p, cx + 70, cy - 30, 44, sage, 1); longtail(p, cx + 30, cy - 36, 30, blue, 1); }, blue);
+  regionsMap();
+  destination("06", "Bangkok", terra,
+    "Thailand's electric capital is a city of contrasts: glittering temples beside neon malls, river life beside skytrains, and some of the best street food on earth. Give it two or three days — it grows on you fast.",
+    ["The Grand Palace & Wat Phra Kaew (Emerald Buddha)", "Wat Pho's reclining Buddha & a temple massage", "Wat Arun at sunset, from across the river", "A long-tail boat through the Thonburi canals (khlongs)", "Chatuchak weekend market — 15,000 stalls", "Chinatown (Yaowarat) after dark, for street food"],
+    ["Get around by BTS Skytrain, MRT metro and river boats — fast and cheap.", "Use metered taxis or Grab; agree tuk-tuk fares first.", "Dress modestly for temples (shoulders & knees covered).", "Base yourself near the river (Old Town) or by a BTS station (Sukhumvit)."],
+    ["Pad krapow and boat noodles from street stalls", "Mango sticky rice from a market cart", "Yaowarat (Chinatown) for seafood, dim sum and sweets", "A rooftop bar for the skyline (smart-casual dress)"],
+    "Bangkok");
+  destination("07", "Chiang Mai & the North", sage,
+    "The cultural capital of the north is laid-back, green and endlessly likeable — a moat-ringed old town of 300 temples, fringed by mountains, cooking schools and coffee. The gateway to Pai, Mae Hong Son and the great northern road trips.",
+    ["The old-city temples — Wat Chedi Luang, Wat Phra Singh", "Doi Suthep temple, on the mountain above the city", "A day at an ethical elephant sanctuary (no riding)", "A Thai cooking class & the Sunday Walking Street", "Pai — a bohemian mountain town (3h north)", "The Mae Hong Son Loop (see itineraries)"],
+    ["Cool, especially Nov–Feb; pack a light layer.", "Avoid Mar–Apr burning season (smoky air).", "Rent a scooter to explore — or hire a car for the loop.", "Yi Peng & Loy Krathong (Nov) fill the sky with lanterns."],
+    ["Khao soi — the north's coconut-curry noodle bowl", "Sai ua (herby sausage) & nam prik dips", "Khao niao (sticky rice) with everything", "Northern coffee, grown in the surrounding hills"],
+    "Chiang Mai");
+  destination("08", "The South & islands", ochre,
+    "Postcard Thailand: limestone karsts rising from turquoise seas, rainforest national parks, and an island for every mood. Two coasts mean there's almost always somewhere dry — when the Andaman rains, cross to the Gulf.",
+    ["Railay & Ao Nang (Krabi) — climbers' cliffs & beaches", "Phang Nga Bay by long-tail or kayak", "Khao Sok National Park — jungle lake & raft-houses", "Koh Lanta — long, mellow west-coast beaches", "The Gulf isles — Ko Samui, Ko Pha-ngan, Ko Tao (diving)", "The Similan Islands for snorkelling & diving (seasonal)"],
+    ["Andaman coast (Krabi, Phuket): best Nov–Apr.", "Gulf coast (Samui, Tao): driest Feb–Apr & Jul–Aug.", "Ferries link the islands; book ahead in high season.", "Reef-safe sunscreen only — protect the coral."],
+    ["Fresh seafood, grilled by the beach", "Southern curries — rich, turmeric-gold, fiery", "Massaman curry — mild and fragrant", "Fruit shakes and fresh coconut"],
+    "The South");
+  destination("09", "Ayutthaya, Kanchanaburi & Isaan", blue,
+    "Beyond the headline sights lies a quieter, history-rich Thailand — easy add-ons from Bangkok, or a route all their own.",
+    ["Ayutthaya — the romantic ruins of the old capital (1h from Bangkok)", "Kanchanaburi — the River Kwai, Death Railway & Erawan Falls", "Khao Yai National Park — waterfalls, gibbons & vineyards", "Phimai & Phanom Rung — Khmer temples older than Angkor", "The Mekong towns — Nong Khai & the surreal Sala Keoku", "Silk-weaving villages and som-tam country in Isaan"],
+    ["Ayutthaya: rent a bike to ride between the temples.", "Kanchanaburi: an easy, beautiful long weekend from Bangkok.", "Isaan: little English, the warmest welcomes, lowest prices.", "Trains and buses link it all; a car gives you the villages."],
+    ["Som tam (green-papaya salad) — Isaan's icon", "Larb & gai yang (grilled chicken) with sticky rice", "Sai krok Isan — sour fermented sausage", "Mekong river fish, simply grilled"],
+    "Beyond the Big Sights");
+
+  divider("IV", "Part Four", "Ready-to-use itineraries", "Three trips, planned for you — adapt and go.", (p, cx, cy) => { mountains(p, cx - 150, cy - 30, 300, 72, hair, 1); longtail(p, cx, cy - 34, 34, blue, 1); palm(p, cx - 120, cy - 30, 40, sage, 1); palm(p, cx + 110, cy - 30, 36, sage, 1); }, terra);
+  itinerary("10", "10 days · The North", sage,
+    "Mountains, temples and the legendary Mae Hong Son Loop, from a Chiang Mai base. Fly in and out of Chiang Mai. Best Nov–Feb.",
+    [{ key: "cnx", name: "Chiang Mai", x: 0.62, y: 0.5, big: true, lx: 9 }, { key: "pai", name: "Pai", x: 0.4, y: 0.86, big: true }, { key: "mhs", name: "Mae Hong Son", x: 0.14, y: 0.66, big: true, lx: -92 }, { key: "sariang", name: "Mae Sariang", x: 0.26, y: 0.16, lx: -74 }, { key: "inth", name: "Doi Inthanon", x: 0.66, y: 0.3, lx: 9 }],
+    ["cnx", "pai", "mhs", "sariang", "inth", "cnx"],
+    [["D1–2", "Chiang Mai", "Old-city temples, a cooking class, an ethical elephant visit and the night markets."], ["D3", "To Pai", "Ride the 762 curves north; waterfalls and coffee stops on the way."], ["D4", "Pai", "Canyon at dawn, hot springs, white temple at sunset."], ["D5", "To Mae Hong Son", "Tham Lod cave and the bamboo bridge; a calm, Shan-flavoured town."], ["D6", "Mae Hong Son", "Ban Rak Thai tea village and misty viewpoints."], ["D7", "To Mae Sariang", "A quiet riverside town on the loop's western arm."], ["D8", "To Doi Inthanon", "Climb Thailand's highest peak; twin pagodas and waterfalls."], ["D9–10", "Chiang Mai", "Massage, markets and a slow finish before flying out."]],
+    "North Itinerary", true);
+  itinerary("11", "12 days · Islands & South", blue,
+    "Karsts, rainforest and beaches down the Andaman coast, finishing island-slow. Fly into Phuket, out of Krabi (or vice-versa). Best Nov–Apr.",
+    [{ key: "phuket", name: "Phuket", x: 0.3, y: 0.92, big: true }, { key: "phang", name: "Phang Nga", x: 0.46, y: 0.8 }, { key: "khaosok", name: "Khao Sok", x: 0.62, y: 0.64, lx: 7 }, { key: "krabi", name: "Krabi", x: 0.55, y: 0.42, lx: 7 }, { key: "lanta", name: "Koh Lanta", x: 0.5, y: 0.18, big: true }],
+    ["phuket", "phang", "khaosok", "krabi", "lanta"],
+    [["D1–2", "Phuket", "Old-town shophouses and a first beach; ease into island time."], ["D3", "Phang Nga Bay", "Long-tail or kayak among the sea-stacks and hidden lagoons."], ["D4–5", "Khao Sok", "Jungle lake by raft-house; dawn mist, gibbons and caves."], ["D6–8", "Krabi, Ao Nang & Railay", "Climbers' karsts, beach-hopping and a boat to cliff-ringed Railay."], ["D9–11", "Koh Lanta", "Long, quiet beaches; sunsets and old-town seafood."], ["D12", "To Krabi & home", "A last swim before the flight out."]],
+    "South Itinerary");
+  itinerary("12", "14 days · Best of Thailand", terra,
+    "Bangkok, the cultural north and the southern islands, linked by two short internal flights. The classic first-timer's grand tour.",
+    [{ key: "bkk", name: "Bangkok", x: 0.62, y: 0.42, big: true }, { key: "ayu", name: "Ayutthaya", x: 0.56, y: 0.56 }, { key: "cnx", name: "Chiang Mai", x: 0.42, y: 0.9, big: true }, { key: "krabi", name: "Krabi", x: 0.5, y: 0.12, big: true }],
+    ["bkk", "ayu", "cnx", "krabi"],
+    [["D1–3", "Bangkok", "Temples, river life, Chinatown food and a day-trip to Ayutthaya's ruins."], ["D4", "Fly to Chiang Mai", "Evening at the night bazaar."], ["D5–7", "Chiang Mai", "Temples, cooking class, ethical elephants and Doi Suthep."], ["D8–9", "Pai or the hills", "A taste of the mountains — slow and scenic."], ["D10", "Fly south to Krabi", "Swap mountains for the sea."], ["D11–13", "Krabi & islands", "Railay, Ao Nang and a day among the karsts."], ["D14", "Home", "One last Thai breakfast before the airport."]],
+    "Best-of Itinerary");
+
+  divider("V", "Part Five", "Getting around & staying", "How to move, and where to lay your head.", (p, cx, cy) => { longtail(p, cx - 80, cy - 20, 30, blue, 1); temple(p, cx + 70, cy - 30, 46, ink, 1); mountains(p, cx - 160, cy - 30, 320, 64, hair, 1); }, sage);
+  transport(); accommodation();
+
+  divider("VI", "Part Six", "Food & drink", "How to eat brilliantly, anywhere.", (p, cx, cy) => { bowl(p, cx, cy - 10, 46, terra, 1); palm(p, cx - 120, cy - 30, 36, sage, 1); palm(p, cx + 110, cy - 30, 32, sage, 1); }, ochre);
+  eating(); dishesNorth(); dishesSouth();
+
+  divider("VII", "Part Seven", "Activities & experiences", "The things you'll still talk about years later.", (p, cx, cy) => { mountains(p, cx - 150, cy - 30, 300, 76, hair, 1); sun(p, cx + 100, cy + 20, 13, terra, 1.1); palm(p, cx - 110, cy - 30, 42, sage, 1); }, blue);
+  activities();
+
+  divider("VIII", "Part Eight", "Practical tips & language", "Travel smart, travel kind, and say hello.", (p, cx, cy) => { lantern(p, cx, cy + 4, 34, terra, 1); temple(p, cx - 90, cy - 24, 40, ink, 1); palm(p, cx + 90, cy - 24, 36, sage, 1); }, terra);
+  culture(); safetyScams(); phrasebook1(); phrasebook2();
+
+  closing();
+  back();
+
+  return doc.save();
+}
+
+// ----- remaining content pages -----
+function transport() {
+  pageW("13", "Getting around", "Transport", blue, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Between cities", M, yl);
+    yl = bullets(p, ["Domestic flights are cheap and quick (AirAsia, Nok, Thai Lion, Bangkok Airways) — ideal for north↔south.", "Trains are scenic and characterful; the overnight sleeper to Chiang Mai is a classic (book ahead, 2nd-class A/C).", "Long-distance buses & minivans reach everywhere; comfortable 'VIP' coaches on big routes.", "Book trains, buses and ferries online via 12Go."], M, yl, colW, { accent: blue }) - 4;
+    yl = subhead(p, "On the islands & coast", M, yl, sage);
+    yl = bullets(p, ["Ferries & speedboats link the islands — rougher and reduced in monsoon.", "Long-tail boats for short hops and hidden beaches (agree the price).", "Songthaews (shared pick-ups) run fixed routes for a few baht."], M, yl, colW, { accent: sage });
+
+    yr = subhead(p, "Around town", x2, yr, terra);
+    yr = bullets(p, ["Bangkok: BTS Skytrain + MRT metro are fast, cheap and air-conditioned.", "Grab (and Bolt) for metered, hassle-free rides — pay in-app.", "Metered taxis: insist on the meter ('meter, please').", "Tuk-tuks: fun but agree the fare first; not always cheaper.", "Motorbike taxis (orange vests) for quick solo hops."], x2, yr, colW, { accent: terra }) - 4;
+    yr = subhead(p, "Self-driving", x2, yr, ochre);
+    yr = bullets(p, ["Carry an International Driving Permit + your licence; checkpoints are common.", "Drive on the LEFT; give way to bigger vehicles.", "Scooters (THB 200–300/day) suit the north; never leave your passport as deposit.", "Helmets are law; insurance must cover motorbikes.", "Avoid night driving on rural roads."], x2, yr, colW, { accent: ochre });
+    return 96;
+  }, "Transport", { band: false });
+}
+function accommodation() {
+  pageW("14", "Where to stay", "Accommodation", sage, (p, y0) => {
+    let y = para(p, "Thailand offers some of the best-value beds in the world — from £6 hostel bunks to design hotels that would cost five times more in Europe. Book the first and last nights ahead; improvise the middle.", M, y0, CW, { leading: 14 }) - 8;
+    const cols = [{ h: "Type", w: CW * 0.24 }, { h: "≈ /night", w: CW * 0.2 }, { h: "Best for", w: CW * 0.56 }];
+    const rows = [["Hostel / guesthouse", "THB 200–700", "Backpackers, solo travellers, meeting people"], ["Boutique guesthouse", "THB 800–1,800", "Character and comfort without the price"], ["3–4★ hotel / resort", "THB 1,800–4,500", "Pools, breakfast, families"], ["Design / luxury", "THB 5,000+", "Special occasions, honeymoons"], ["Homestay / raft-house", "THB 500–1,500", "Villages, national parks, real local life"]];
+    y = table(p, M, y, cols, rows, { rowH: 22, fontSize: 9.5 }) - 12;
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; const top = y;
+    let yl = subhead(p, "Where to base yourself", M, top, terra);
+    yl = bullets(p, ["Bangkok: Old Town (river, temples) or Sukhumvit (BTS, nightlife).", "Chiang Mai: inside or just outside the old-city moat.", "Krabi: Ao Nang for access; Railay to wake by the cliffs.", "Islands: west coast for sunsets; quieter beaches need a scooter."], M, yl, colW, { accent: terra });
+    let yr = subhead(p, "Booking tips", x2, top, blue);
+    yr = bullets(p, ["Read recent reviews for cleanliness, noise and Wi-Fi.", "A/C vs fan: worth it in the lowlands; fan is fine up north.", "High season (Nov–Feb) & holidays: book well ahead.", "Walk-in deals exist off-season — bargain politely.", "Check the location pin, not just the photos."], x2, yr, colW, { accent: blue });
+    return Math.min(yl, yr);
+  }, "Accommodation");
+}
+function eating() {
+  pageW("15", "Food & drink", "How to eat in Thailand", ochre, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Street food, decoded", M, yl);
+    yl = bullets(p, ["The best meals come from carts and tiny shophouses — follow the crowds of locals.", "Many stalls cook one dish brilliantly; point if you can't pronounce it.", "Sit, eat, pay after; a bowl of noodles is THB 50–80.", "Markets cluster at dawn and dusk — arrive hungry.", "Busy + fresh + hot = safe. Watch it cooked."], M, yl, colW, { accent: ochre }) - 4;
+    yl = subhead(p, "Spice & ordering", M, yl, terra);
+    yl = bullets(p, ["'Mai phet' = not spicy; 'phet nit noi' = a little (still a lot!).", "Season at the table: fish sauce, chilli, sugar, vinegar.", "Rice ('khao') is the centre; share dishes family-style.", "Eat with spoon & fork — the fork pushes, the spoon delivers."], M, yl, colW, { accent: terra });
+
+    yr = subhead(p, "Vegetarian & allergies", x2, yr, sage);
+    yr = bullets(p, ["'Mangsawirat' = vegetarian; 'jay' = strict vegan — look for the yellow-red 'เจ' flag.", "Fish sauce & shrimp paste hide everywhere — 'mai sai nam pla / mai sai kapi'.", "Peanuts are common; carry an allergy translation card.", "The annual Vegetarian Festival (Oct) is a feast for plant-eaters."], x2, yr, colW, { accent: sage }) - 4;
+    yr = subhead(p, "What to drink", x2, yr, blue);
+    yr = bullets(p, ["Cha yen — sweet orange iced tea.", "Nam manao — fresh lime soda.", "Fruit shakes ('mai sai nam tan' for no sugar).", "Singha, Chang & Leo — ice-cold local beers.", "Roadside coffee — Café Amazon is everywhere."], x2, yr, colW, { accent: blue });
+    return 96;
+  }, "Eating", { band: false });
+}
+function dishesNorth() {
+  pageW("16", "Food & drink", "What to order · North & Centre", terra, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "The North", M, y0, terra);
+    for (const [a, b] of [["Khao soi", "the crown — egg noodles in coconut curry, crisp noodles on top"], ["Sai ua", "herby grilled Chiang Mai sausage"], ["Nam prik num", "smoky green-chilli dip with sticky rice & veg"], ["Gaeng hang lay", "rich Burmese-style pork curry"], ["Khanom jeen nam ngiao", "rice noodles in a tomato-pork broth"], ["Khao niao", "sticky rice — eaten by hand"]]) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 2;
+    let yr = subhead(p, "Central & Bangkok", x2, y0, blue);
+    for (const [a, b] of [["Pad krapow", "holy-basil stir-fry + fried egg — the comfort dish"], ["Tom yum goong", "hot-and-sour prawn soup"], ["Tom kha gai", "coconut-galangal chicken soup"], ["Pad thai", "the famous wok noodles"], ["Khao man gai", "Hainanese chicken & rice"], ["Massaman", "mild, fragrant curry of Persian roots"], ["Mango sticky rice", "the dessert — khao niao mamuang"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 13.5 }) - 2;
+    return Math.min(yl, yr);
+  }, "Dishes I");
+}
+function dishesSouth() {
+  pageW("16", "Food & drink", "What to order · Isaan & South", sage, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "Isaan (North-East)", M, y0, sage);
+    for (const [a, b] of [["Som tam", "pounded green-papaya salad — order 'phet nit noi'!"], ["Larb", "zingy minced-meat salad, herbs & toasted rice"], ["Gai yang", "marinated grilled chicken"], ["Sai krok Isan", "sour fermented pork sausage"], ["Nam tok", "'waterfall' grilled-beef salad"], ["Khao niao", "sticky rice — the staple here"]]) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 2;
+    let yr = subhead(p, "The South & sweets", x2, y0, ochre);
+    for (const [a, b] of [["Gaeng tai pla", "intense southern fish curry — for the brave"], ["Khao yam", "fresh herbal rice salad"], ["Massaman / seafood curries", "coconut-rich, fragrant, often milder"], ["Grilled seafood", "by the beach, with nam jim seafood dip"], ["Roti", "griddled banana-and-egg pancake"], ["Fresh fruit", "mangosteen, rambutan, durian (if you dare)"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 13.5 }) - 2;
+    let y = Math.min(yl, yr) - 12;
+    y = subhead(p, "Market wisdom", M, y, blue);
+    y = bullets(p, ["Morning markets for fruit, coffee and rice dishes; night markets for grills, noodles and sweets.", "Order from several stalls and share — that's the joy of it.", "A bag of cut fruit with chilli-salt is the perfect THB-20 snack."], M, y, CW, { accent: blue });
+    return y;
+  }, "Dishes II");
+}
+function activities() {
+  pageW("17", "Experiences", "Things to do", blue, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Culture & spirit", M, yl, terra);
+    yl = bullets(p, ["Temple-hop the great wats — go early, dress modestly.", "Give alms to monks at dawn, respectfully.", "Watch (or join) Loy Krathong & Yi Peng lanterns in Nov.", "Learn the craft at a Thai cooking class — a half-day highlight.", "A traditional Thai massage (from THB 250/hour)."], M, yl, colW, { accent: terra }) - 4;
+    yl = subhead(p, "Mountains & jungle", M, yl, sage);
+    yl = bullets(p, ["Trek to hill-tribe villages and waterfalls in the north.", "Ride the Mae Hong Son Loop by scooter or car.", "Kayak the jungle lake at Khao Sok; spot gibbons at Khao Yai.", "Chase waterfalls — Erawan's seven turquoise tiers."], M, yl, colW, { accent: sage });
+
+    yr = subhead(p, "Sea & islands", x2, yr, blue);
+    yr = bullets(p, ["Snorkel or dive — Ko Tao is a world-famous (cheap) place to learn.", "Long-tail or kayak through Phang Nga & Krabi's karsts.", "Island-hop by ferry; find a beach with no name.", "Sunset from a long-tail, then seafood on the sand."], x2, yr, colW, { accent: blue }) - 4;
+    yr = subhead(p, "With animals — ethically", x2, yr, ochre);
+    yr = bullets(p, ["Choose genuine elephant sanctuaries where elephants roam and are never ridden — research first.", "Avoid riding, shows and tiger selfies.", "Watch wildlife in national parks, at a respectful distance."], x2, yr, colW, { accent: ochre });
+    return 96;
+  }, "Activities", { band: false });
+}
+function culture() {
+  pageW("18", "Practical tips", "Culture & etiquette", sage, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Do", M, yl, sage);
+    yl = bullets(p, ["Return a 'wai' (palms together) with a smile.", "Dress modestly at temples — shoulders & knees covered; shoes off.", "Keep calm; a smile defuses almost anything ('jai yen').", "Give and receive with your right hand, or both.", "Ask before photographing people."], M, yl, colW, { accent: sage }) - 4;
+    yl = subhead(p, "Don't", M, yl, terra);
+    yl = bullets(p, ["Touch anyone's head — even a child's.", "Point your feet at people or Buddha images.", "Raise your voice or show anger ('losing face').", "Disrespect the monarchy — it is against the law.", "Women: don't touch or hand things directly to monks."], M, yl, colW, { accent: terra });
+
+    yr = subhead(p, "The ideas behind it", x2, yr, blue);
+    yr = para(p, "Two words explain a lot of Thailand. 'Sanuk' is the belief that life — even work — should have an element of fun. 'Jai yen', a 'cool heart', prizes calm and composure over confrontation. And 'mai pen rai' — never mind, it's fine — is a whole gentle philosophy of letting things go.", x2, yr, colW, { leading: 13.5 }) - 8;
+    yr = subhead(p, "At the temple (wat)", x2, yr, ochre);
+    yr = bullets(p, ["Cover up, remove shoes & hat, lower your voice.", "Sit with feet tucked behind you, not toward the Buddha.", "A small donation helps with upkeep.", "Never climb on ruins or Buddha images for a photo."], x2, yr, colW, { accent: ochre });
+    return 96;
+  }, "Culture", { band: false });
+}
+function safetyScams() {
+  pageW("19", "Practical tips", "Staying safe & smart", terra, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Common scams — smile & decline", M, yl, ochre);
+    yl = bullets(p, ["'The temple/palace is closed today' — it isn't; the tout has a gem shop to show you.", "Cheap tuk-tuk 'tours' that detour to commission stops.", "Rigged taxi meters — insist on the meter or agree a price first.", "Jet-ski / scooter 'damage' claims — photograph everything at pickup.", "Over-friendly strangers with card games or 'free' drinks."], M, yl, colW, { accent: ochre }) - 4;
+    yl = subhead(p, "Health on the road", M, yl, sage);
+    yl = bullets(p, ["Drink bottled/filtered water only; ice in cafés is usually fine.", "Eat where it's busy and freshly cooked.", "Carry rehydration salts; pace the heat and hydrate.", "Pharmacies are excellent and cheap for minor ailments."], M, yl, colW, { accent: sage });
+
+    yr = subhead(p, "Sensible & safe", x2, yr, blue);
+    yr = bullets(p, ["Thailand is generally very safe; petty theft is the main risk.", "Use hotel safes; keep a card and some cash separate.", "Women travel widely and easily — usual night-time sense applies.", "Respect the sea — heed red flags and rip-current warnings.", "Buy travel insurance that covers motorbikes if you'll ride."], x2, yr, colW, { accent: blue }) - 4;
+    yr = subhead(p, "Emergency numbers", x2, yr, terra);
+    yr = bullets(p, ["Police 191 · Ambulance 1669", "Tourist Police (English) 1155", "Tourism Authority (TAT) 1672"], x2, yr, colW, { accent: terra });
+    yr -= 6; yr = subhead(p, "Travel kindly", x2, yr, sage);
+    yr = bullets(p, ["Refill a bottle; reef-safe sunscreen; bin nothing in nature.", "Spend with local families, markets and guides."], x2, yr, colW, { accent: sage });
+    return 96;
+  }, "Safety", { band: false });
+}
+function phrasebook1() {
+  pageW("20", "Useful expressions", "A Thai phrasebook · I", blue, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "Essentials", M, y0);
+    for (const [a, b] of [["Hello", "sawatdee (khrap/kha)"], ["Thank you", "khop khun (khrap/kha)"], ["Yes / No", "chai / mai chai"], ["Please", "karuna"], ["Sorry / excuse me", "khor thot"], ["No worries", "mai pen rai"], ["Do you speak English?", "phut angkrit dai mai?"], ["I don't understand", "mai khao jai"], ["My name is…", "phom/chan chue…"]]) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 14.5 });
+    yl -= 4; yl = subhead(p, "Numbers", M, yl, sage);
+    yl = para(p, "1 nung · 2 song · 3 sam · 4 si · 5 ha · 6 hok · 7 jet · 8 paet · 9 kao · 10 sip · 20 yi-sip · 100 nung roi · 1,000 nung phan", M, yl, colW, { size: 9.5, leading: 14 });
+
+    let yr = subhead(p, "Getting around", x2, y0, terra);
+    for (const [a, b] of [["Where is…?", "…yu thi nai?"], ["How much?", "tao rai?"], ["Too expensive", "phaeng pai"], ["Turn left / right", "liao sai / liao khwa"], ["Straight on", "trong pai"], ["Stop here", "jort thi ni"], ["Bus / train station", "sathani rot / rot fai"], ["Petrol station", "pam nam man"], ["Toilet", "hong nam"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14.5 });
+    return Math.min(yl, yr);
+  }, "Phrasebook I", { band: false });
+}
+function phrasebook2() {
+  pageW("21", "Useful expressions", "A Thai phrasebook · II", ochre, (p, y0) => {
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "At the table", M, y0, terra);
+    for (const [a, b] of [["Delicious!", "aroi!"], ["Not spicy, please", "mai phet"], ["A little spicy", "phet nit noi"], ["Vegetarian / vegan", "mangsawirat / jay"], ["No fish sauce", "mai sai nam pla"], ["The bill, please", "check bin"], ["Water", "nam plao"], ["Cheers!", "chon kaew!"], ["I'm allergic to…", "phae…"]]) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 14.5 });
+    let yr = subhead(p, "Time & small talk", x2, y0, sage);
+    for (const [a, b] of [["Today / tomorrow", "wan ni / phrung ni"], ["How are you?", "sabai dee mai?"], ["I'm well", "sabai dee"], ["Beautiful", "suay"], ["Friend", "phuean"], ["Good luck", "chok dee"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14.5 });
+    yr -= 4; yr = subhead(p, "Emergencies", x2, yr, terra);
+    for (const [a, b] of [["Help!", "chuay duay!"], ["Hospital", "rong phayaban"], ["Police", "tamruat"], ["I'm lost", "chan long thang"], ["Call a doctor", "riak mor"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14.5 });
+    let y = Math.min(yl, yr) - 10;
+    p.drawRectangle({ x: M, y: y - 26, width: CW, height: 38, color: panel, borderColor: hair, borderWidth: 0.8 });
+    para(p, "Thai is tonal, so don't worry about perfection — a warm 'sawatdee khrap/kha' and a smile open every door. Men end politely with 'khrap', women with 'kha'.", M + 12, y - 6, CW - 24, { size: 9.5, font: SI, color: ink, leading: 13 });
+    return y;
+  }, "Phrasebook II", { band: false });
+}
+function closing() {
+  pageW("", "Before you go (again)", "Go slowly, see deeply", sage, (p, y0) => {
+    let y = para(p, "If there's one idea to carry into Thailand, it's this: resist the urge to see everything. The travellers who fall hardest for this country are the ones who slow down — who spend a third morning at the same coffee stall until the owner knows their order, who take the long road over the loop, who say yes to the invitation they didn't plan for.", M, y0, CW, { leading: 15.5 }) - 8;
+    y = para(p, "Eat the thing you can't name. Learn the ten words. Give way to the smiles. Thailand will meet you more than halfway.", M, y, CW, { leading: 15.5 }) - 16;
+    y = subhead(p, "A few good resources", M, y, terra);
+    const colW = CW / 2 - 16; const x2 = M + CW / 2 + 16; const top = y;
+    let yl = bullets(p, ["Tourism Authority of Thailand — tourismthailand.org", "12Go — trains, buses & ferries", "Richard Barrow — long-running Thailand travel blog"], M, top, colW, { accent: terra });
+    let yr = bullets(p, ["Grab / Bolt — rides & food", "Google Maps (offline) + Translate (Thai)", "Your travel insurer's 24-hour line"], x2, top, colW, { accent: sage });
+    return Math.min(yl, yr);
+  }, "Go Slowly");
 }
 function back() {
   const p = newPage(); const pad = 38;
   p.drawRectangle({ x: pad, y: pad, width: W - pad * 2, height: H - pad * 2, borderColor: hair, borderWidth: 0.6, color: undefined });
-  globe(p, W / 2, H / 2 + 78, 24, terra, 1);
-  center(p, "Chok dee", H / 2 + 6, { size: 40, font: D, color: ink });
-  center(p, "Good luck, and enjoy every curve.", H / 2 - 28, { size: 13, font: SI, color: sub });
-  trackedCenter(p, "THE SLOW ATLAS  ·  RENNES, FRANCE", 120, { size: 8, font: NB, color: terra, tracking: 3 });
-}
-
-// ============================ ROUTE DATA ============================
-const DAYS_A = [
-  { no: "Day 1", title: "Chiang Mai – Pai", leg: "≈135 km · 3–4 h", h: 84, body: "Ease in with the famous climb to Pai — 762 curves of forest and viewpoints. Stop at Mok Fa waterfall and the roadside coffee stands. Arrive by mid-afternoon for Pai's slow, bohemian rhythm.", eat: "Pai Walking Street night market.", stay: "Pai — riverside bungalows or a hillside guesthouse." },
-  { no: "Day 2", title: "Around Pai", leg: "Rest day", h: 80, body: "Park the bike. Catch dawn at Pai Canyon, soak in the Tha Pai hot springs, see the Land Split and the white Wat Phra That Mae Yen for sunset over the valley.", eat: "A long, lazy café breakfast.", stay: "A second night in Pai." },
-  { no: "Day 3", title: "Pai – Mae Hong Son", leg: "≈110 km · 3 h", h: 80, body: "The quietest, prettiest leg. Detour to Tham Lod cave (by bamboo raft and lantern) and the Su Tong Pae bamboo bridge. Mae Hong Son is a calm, Shan-flavoured town ringed by mountains.", eat: "Lakeside stalls by Nong Jong Kham at dusk.", stay: "Mae Hong Son, near the lake." },
-];
-const DAYS_B = [
-  { no: "Day 4", title: "Mae Hong Son – Khun Yuam – Mae Sariang", leg: "≈160 km · 4 h", h: 84, body: "Climb to Ban Rak Thai, a Yunnanese tea village near the Myanmar border, for breakfast among the hills. Roll south via Khun Yuam's poignant WWII museum to sleepy, riverside Mae Sariang.", eat: "Thai-Shan cooking in Mae Sariang.", stay: "Mae Sariang, by the Yuam river." },
-  { no: "Day 5", title: "Mae Sariang – Mae Chaem", leg: "≈170 km · 4–5 h", h: 80, body: "A remote, beautiful stretch — fuel up first. The road winds through forest and rice terraces to Mae Chaem, a traditional weaving town few travellers reach. Quiet nights, big stars.", eat: "Simple local kitchens — point and smile.", stay: "Mae Chaem — homestay or guesthouse." },
-];
-const DAYS_C = [
-  { no: "Day 6", title: "Mae Chaem – Doi Inthanon – Chiang Mai", leg: "≈150 km · 4 h", h: 84, body: "Climb to the roof of Thailand (2,565 m): the twin royal pagodas, cloud forest and the Pha Dok Siew waterfall trail. Then descend the eastern side back toward Chiang Mai.", eat: "Karen-grown coffee on the mountain.", stay: "Chiang Mai's old city." },
-  { no: "Day 7", title: "Chiang Mai", leg: "Slow finish", h: 80, body: "Reward the ride: a Thai massage, a cooking class, and the old-city temples and Sunday Walking Street. Toast 1,864 curves survived. Chon kaew!", eat: "One last bowl of khao soi.", stay: "Chiang Mai." },
-];
-
-async function buildDoc([w, h]) {
-  doc = await PDFDocument.create();
-  doc.registerFontkit(fontkit);
-  doc.setTitle("The Slow Atlas — Thailand Road Trip Atlas");
-  doc.setAuthor("The Slow Atlas");
-  doc.setSubject("The complete Thailand road-trip guide & planner");
-  doc.setKeywords(["thailand", "road trip", "travel guide", "mae hong son loop", "itinerary", "ebook"]);
-  W = w; H = h; M = 50; CW = W - M * 2; nameCounter = 0; PAGE = 2;
-  D = await doc.embedFont(fb.display, { subset: true }); SF = await doc.embedFont(fb.serif, { subset: true });
-  SB = await doc.embedFont(fb.serifB, { subset: true }); SI = await doc.embedFont(fb.serifI, { subset: true });
-  SN = await doc.embedFont(fb.sans, { subset: true }); NB = await doc.embedFont(fb.sansB, { subset: true });
-  form = doc.getForm();
-
-  cover(); contents(); inBrief(); regions1(); regions2(); whenToGo(); visasMoney();
-  driving(); renting(); safety(); connectivity(); culture(); phrasebook(); eating(); dishes();
-  routesOverview(); loopIntro();
-  loopDays(DAYS_A, "Loop · Days 1–3");
-  loopDays(DAYS_B, "Loop · Days 4–5", { h: "Loop wisdom", items: ["Ride defensively — locals overtake on blind bends; hug the left.", "Fuel and cash are scarce between towns; top up in Mae Hong Son and Mae Sariang.", "Mornings are clearest for mountain views; afternoons can cloud over."] });
-  loopDays(DAYS_C, "Loop · Days 6–7");
-  // Route 2 — Andaman
-  simpleRoute("14", "Route 2", "The Andaman Coast", blue,
-    "Limestone karsts, rainforest and beaches for every mood, strung down Thailand's west coast. Best November to April. Fly into Phuket, drive south, and finish island-slow on Koh Lanta.",
-    [{ key: "phuket", name: "Phuket", x: 0.3, y: 0.92, big: true }, { key: "phang", name: "Phang Nga", x: 0.46, y: 0.8 }, { key: "khaosok", name: "Khao Sok", x: 0.6, y: 0.66, lx: 7 }, { key: "krabi", name: "Krabi / Ao Nang", x: 0.55, y: 0.44, lx: 7 }, { key: "lanta", name: "Koh Lanta", x: 0.52, y: 0.2, big: true }],
-    ["phuket", "phang", "khaosok", "krabi", "lanta"],
-    [["D1–2", "Phuket & Phang Nga Bay", "Old-town shophouses, then a long-tail through James Bond Island's sea-stacks and hidden lagoons."], ["D3–4", "Khao Sok National Park", "Jungle older than the Amazon; kayak the emerald Cheow Lan lake and sleep in a floating raft-house."], ["D5–6", "Krabi, Ao Nang & Railay", "Climbers' karsts, beach bars and a boat to cliff-ringed Railay (reachable only by sea)."], ["D7–8", "Koh Lanta", "Wind down on long, quiet west-coast beaches and the old Lanta town for sunset seafood."]],
-    "Andaman Coast");
-  // Route 3 — Isaan
-  simpleRoute("14", "Route 3", "Isaan & the Mekong", sage,
-    "The Thailand few visitors see: Khmer temples older than Angkor, silk villages, fiery food and the great Mekong. Authentic, warm and gloriously cheap. Loop north-east from Bangkok or Khao Yai.",
-    [{ key: "kyai", name: "Khao Yai", x: 0.28, y: 0.86, big: true }, { key: "phimai", name: "Phimai", x: 0.4, y: 0.7 }, { key: "phanom", name: "Phanom Rung", x: 0.52, y: 0.52, lx: 7 }, { key: "ubon", name: "Ubon", x: 0.72, y: 0.36, big: true }, { key: "khong", name: "Khong Chiam", x: 0.84, y: 0.46, lx: -64 }, { key: "nongkhai", name: "Nong Khai", x: 0.5, y: 0.9, big: true }],
-    ["kyai", "phimai", "phanom", "ubon", "khong", "nongkhai"],
-    [["D1–2", "Khao Yai", "Thailand's oldest national park — waterfalls, gibbons, vineyards and elephants in the wild."], ["D3", "Phimai", "A magnificent Khmer temple that pre-dates and inspired Angkor Wat."], ["D4", "Phanom Rung", "A sandstone sanctuary on an extinct volcano, aligned to the rising sun."], ["D5–6", "Ubon & Khong Chiam", "River life where the Mekong meets the Mun, and the 'two-coloured river'."], ["D7–8", "Up the Mekong to Nong Khai", "Riverside sunsets, the surreal Sala Keoku sculpture park, and the road home."]],
-    "Isaan");
-  // Route 4 — Kanchanaburi
-  simpleRoute("14", "Route 4", "Bangkok – Kanchanaburi", ochre,
-    "Waterfalls, wartime history and floating markets — the easiest first road trip from the capital, and a beautiful long weekend.",
-    [{ key: "bkk", name: "Bangkok", x: 0.78, y: 0.3, big: true }, { key: "npathom", name: "Nakhon Pathom", x: 0.62, y: 0.42 }, { key: "kan", name: "Kanchanaburi", x: 0.42, y: 0.56, big: true }, { key: "erawan", name: "Erawan Falls", x: 0.36, y: 0.74, lx: 7 }, { key: "sangkhla", name: "Sangkhlaburi", x: 0.2, y: 0.9, big: true }],
-    ["bkk", "npathom", "kan", "erawan", "sangkhla"],
-    [["D1", "Bangkok to Kanchanaburi", "Stop at the giant chedi of Nakhon Pathom; reach the River Kwai by afternoon."], ["D2", "River Kwai & the Death Railway", "The bridge, the moving war museum and cemeteries, and a ride on the cliff-hugging railway."], ["D3", "Erawan National Park", "Climb past seven tiers of turquoise pools — swim in the cool, clear water."], ["D4", "Sangkhlaburi (optional)", "Thailand's longest wooden bridge, a Mon community, and misty lake mornings."]],
-    "Kanchanaburi");
-  responsible(); inspiration();
-  bucketList(); tripOverview(); budgetPage(); itineraryGrid(); staysLog(); packingPage(); dailyPlan(); journalPage(); notesPage();
-  back();
-
-  form.updateFieldAppearances(SN);
-  return doc.save();
+  temple(p, W / 2, H / 2 + 40, 64, ink, 1);
+  center(p, "Chok dee", H / 2 - 30, { size: 42, font: D, color: ink });
+  center(p, "Good luck, and travel gently.", H / 2 - 64, { size: 13, font: SI, color: sub });
+  sceneBand(p, 150);
+  trackedCenter(p, "THE SLOW ATLAS  ·  RENNES, FRANCE", 96, { size: 8, font: NB, color: terra, tracking: 3 });
 }
 
 async function main() {
