@@ -22,7 +22,7 @@ Thailand: The Complete Guide — a beautiful, illustrated PDF guidebook covering
 ✦ THE SLOW ATLAS
 Legendary routes, slowly travelled.
 
-A companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports — with destinations, three ready-to-use itineraries, hand-drawn maps, a dish glossary and a Thai phrasebook.
+A companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports — with destinations, four ready-to-use itineraries, hand-drawn maps, a dish glossary and a Thai phrasebook.
 
 ━━━━━━━━━━━━━━━━━━━━
 WHAT'S INSIDE · 37 pages (a complete illustrated guide)
