@@ -193,8 +193,10 @@ function documents() {
     yr = bullets(p, ["The baht (THB) is cash-first outside cities; carry small notes.", "ATMs everywhere but charge ≈THB 220 per foreign withdrawal — take more, less often.", "Cards work in malls, hotels & chains; markets are cash only.", "Tell your bank you're travelling; carry a backup card, stored apart.", "Tipping isn't expected; rounding up is kind."], x2, yr, colW, { accent: blue }) - 4;
     yr = subhead(p, "Connectivity", x2, yr, ochre);
     yr = bullets(p, ["Tourist SIM (AIS, TrueMove, dtac) at the airport, or an eSIM before you fly.", "Data is fast & cheap; coverage excellent outside deep mountains.", "Save offline maps for road trips."], x2, yr, colW, { accent: ochre });
-    return 0;
-  }, "Documents");
+    // editorial column rule (filet) between the two columns
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl, yr);
+  }, "Documents", "Three things change most often — visa length, prices and opening hours. Re-check them on the official sites a few days before you fly.");
 }
 function packing() {
   pageW("03", "Before you go", "What to pack", sage, (p, y0) => {
@@ -300,7 +302,8 @@ function driving() {
     yr = bullets(p, ["Chiang Mai & Pai — the northern loop's launchpads; lots of choice.", "Phuket, Krabi & Ao Nang — easy island & coast hire.", "Koh Lanta, Samui, Pha-ngan — scooters rule the islands.", "Sukhothai & Ayutthaya — perfect for touring the ruins.", "Avoid renting in central Bangkok — traffic is brutal; use the BTS."], x2, yr, colW, { accent: blue }) - 4;
     yr = subhead(p, "Car hire", x2, yr, ochre);
     yr = bullets(p, ["From ≈THB 900–1,400/day; international desks at every airport.", "Safer for families and the rainy season; air-con is a blessing.", "Take the fullest insurance; photograph the car all round first."], x2, yr, colW, { accent: ochre });
-    return 0;
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl, yr);
   }, "Driving");
 }
 function accommodation() {
@@ -324,7 +327,8 @@ function eating() {
     yr = bullets(p, ["'Mangsawirat' = vegetarian; 'jay' = strict vegan — look for the yellow-red 'เจ' flag.", "Fish sauce & shrimp paste hide everywhere — 'mai sai nam pla / kapi'.", "Peanuts are common; carry an allergy translation card.", "The Vegetarian Festival (Oct) is a feast for plant-eaters."], x2, yr, colW, { accent: sage }) - 4;
     yr = subhead(p, "What to drink", x2, yr, blue);
     yr = bullets(p, ["Cha yen — sweet orange iced tea.", "Nam manao — fresh lime soda.", "Fruit shakes ('mai sai nam tan' for no sugar).", "Singha, Chang & Leo — ice-cold local beers.", "Roadside coffee — Café Amazon is everywhere."], x2, yr, colW, { accent: blue });
-    return 0;
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl, yr);
   }, "Eating");
 }
 function dishesNorth() {
@@ -360,7 +364,8 @@ function activities() {
     yr = bullets(p, ["Learn to dive on Ko Tao — famously cheap and good.", "Long-tail or kayak through Phang Nga & Krabi karsts.", "Island-hop by ferry; find a beach with no name.", "Sunset from a long-tail, then seafood on the sand."], x2, yr, colW, { accent: blue }) - 4;
     yr = subhead(p, "With animals — ethically", x2, yr, ochre);
     yr = bullets(p, ["Choose genuine sanctuaries where elephants roam and are never ridden — research first.", "Avoid riding, shows and tiger selfies.", "Watch wildlife in national parks, at a respectful distance."], x2, yr, colW, { accent: ochre });
-    return 0;
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl, yr);
   }, "Activities");
 }
 function culture() {
@@ -374,7 +379,8 @@ function culture() {
     yr = para(p, "Two words explain a lot of Thailand. 'Sanuk' is the belief that life — even work — should have an element of fun. 'Jai yen', a cool heart, prizes calm over confrontation. And 'mai pen rai' — never mind, it's fine — is a whole gentle philosophy of letting things go.", x2, yr, colW, { leading: 13.5 }) - 8;
     yr = subhead(p, "At the temple (wat)", x2, yr, ochre);
     yr = bullets(p, ["Cover up, shoes & hat off, lower your voice.", "Sit with feet tucked behind you.", "A small donation helps with upkeep.", "Never climb on ruins or Buddha images."], x2, yr, colW, { accent: ochre });
-    return 0;
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl, yr);
   }, "Culture");
 }
 function safety() {
@@ -388,7 +394,8 @@ function safety() {
     yr = bullets(p, ["Refill a bottle — plastic waste is a real problem.", "Reef-safe sunscreen; never touch coral.", "Buy from local markets, kitchens & guides.", "Choose ethical animal experiences (no riding/shows).", "Carry out your litter on remote roads & trails.", "Dress and behave modestly at sacred sites."], x2, yr, colW, { accent: sage }) - 4;
     yr = subhead(p, "Emergency numbers", x2, yr, terra);
     yr = bullets(p, ["Police 191 · Ambulance 1669", "Tourist Police (English) 1155", "Tourism Authority (TAT) 1672"], x2, yr, colW, { accent: terra });
-    return 0;
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl, yr);
   }, "Safety");
 }
 function phrasebook1() {
@@ -469,6 +476,7 @@ function travellers() {
     yr = bullets(p, ["Fast, cheap internet; superb café & coworking culture (Chiang Mai, Bangkok).", "Check the latest long-stay / remote-work visas before you commit."], x2, yr, colW, { accent: blue }) - 4;
     yr = subhead(p, "Business", x2, yr, terra);
     yr = bullets(p, ["Districts: Sathorn, Sukhumvit, Silom.", "Exchange cards with both hands; a small gift is appreciated.", "Easy to bolt a few leisure days onto a work trip."], x2, yr, colW, { accent: terra });
+    p.drawLine({ start: { x: M + CW / 2, y: y0 + 6 }, end: { x: M + CW / 2, y: Math.min(yl, yr) + 4 }, thickness: 0.6, color: hair });
     return Math.min(yl, yr);
   }, "Travellers", "Whatever your profile, the same rule serves you well in Thailand: dress modestly, keep a cool heart, and a smile unlocks the rest.");
 }
