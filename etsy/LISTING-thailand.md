@@ -17,7 +17,7 @@ chiang mai guide, printable guide, travel ebook, asia travel, trip planner
 
 ## Description (plain text — paste as is)
 
-Thailand: The Complete Guide — a beautiful, illustrated PDF guidebook covering where to go, what to eat and how to travel Thailand slowly. 34 pages. Instant download · US Letter + A4.
+Thailand: The Complete Guide — a beautiful, illustrated PDF guidebook covering where to go, what to eat and how to travel Thailand slowly. 37 pages. Instant download · US Letter + A4.
 
 ✦ THE SLOW ATLAS
 Legendary routes, slowly travelled.
@@ -25,18 +25,17 @@ Legendary routes, slowly travelled.
 A companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports — with destinations, three ready-to-use itineraries, hand-drawn maps, a dish glossary and a Thai phrasebook.
 
 ━━━━━━━━━━━━━━━━━━━━
-WHAT'S INSIDE · 34 pages (a complete illustrated guide)
+WHAT'S INSIDE · 37 pages (a complete illustrated guide)
 • Introduction & how to travel Thailand slowly
-• Before you go — when to visit, documents, health & what to pack
-• Budget — what it really costs, with a sample 2-week breakdown
-• Destinations — Bangkok, Chiang Mai & the North, the South & islands, and beyond
-• 3 ready-to-use itineraries — 10 days North, 12 days Islands, 14 days Best-of
-• Getting around — flights, trains, ferries, driving & scooters
+• Before you go — when to visit (with a month-by-month almanac), documents, health & packing
+• Budget — daily costs low to lavish + a sample 2-week breakdown
+• Destinations — Bangkok, Chiang Mai & the North, the South, plus a "Which island?" comparison
+• Four ready-to-use itineraries — 7, 10, 12 & 14 days
+• Getting around — a transport NETWORK MAP (flights/trains/buses/ferries), modes compared, driving & where to rent a scooter
 • Where to stay — types, prices & where to base yourself
-• Food & drink — how to eat, plus a region-by-region dish glossary
-• Activities & experiences, responsible travel
-• Culture & etiquette, safety & scams, and a Thai phrasebook
-• Hand-drawn maps & illustrations throughout
+• Food & drink — how to eat + a region-by-region dish glossary
+• Things to do, culture & etiquette, safety, scams & responsible travel
+• A Thai phrasebook + hand-drawn maps & illustrations throughout
 
 ━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS
