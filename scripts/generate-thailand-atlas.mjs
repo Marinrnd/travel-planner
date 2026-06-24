@@ -83,10 +83,17 @@ function callout(p, x, y, w, h, title, body, accent, art) {
   para(p, body, x + 14, y - 34, w - 28 - (art ? 70 : 0), { size: 9.5, font: SI, color: ink, leading: 13 });
   if (art) art(p, x + w - 38, y - h / 2 - 6);
 }
+// a faint decorative landscape, centred in a column — fills large gaps elegantly
+function motif(p, x, w, cy, accent = terra) { mountains(p, x + 12, cy, w - 24, 46, hair, 1); sun(p, x + w * 0.42, cy + 40, 9, accent, 0.9); temple(p, x + w * 0.6, cy, 30, hair, 1); palm(p, x + w * 0.82, cy, 22, sage, 1); boat(p, x + w * 0.2, cy + 2, 16, blue, 1); }
 // auto-fill the bottom of a page so there is never empty space
 function fillRest(p, endY, tip, accent = terra, art) {
-  const top = endY - 6, bottom = 62; if (top - bottom < 64) return;
-  callout(p, M, top, CW, top - bottom, "Local tip", tip, accent, art || ((pp, cx, cy) => { temple(pp, cx, cy - 16, 30, hair, 1); palm(pp, cx + 34, cy - 16, 22, sage, 1); }));
+  const top = endY - 6, bottom = 62, gap = top - bottom; if (gap < 64) return;
+  const defArt = art || ((pp, cx, cy) => { temple(pp, cx, cy - 16, 26, hair, 1); palm(pp, cx + 30, cy - 16, 20, sage, 1); });
+  if (gap <= 190) { callout(p, M, top, CW, gap, "Local tip", tip, accent, defArt); return; }
+  // big gap: a compact tip box, then a centred landscape fills the rest
+  const lines = measureLines(tip, CW - 28 - 70), ch = 26 + lines * 13;
+  callout(p, M, top, CW, ch, "Local tip", tip, accent, defArt);
+  const sTop = top - ch - 12; if (sTop - bottom > 70) motif(p, M, CW, (sTop + bottom) / 2 - 18, accent);
 }
 function pageW(num, tag, title, accent, render, label, tip, art) {
   const p = newPage(); header(p, num, tag, title, accent);
@@ -166,7 +173,12 @@ function itinerary(num, title, accent, intro, nodes, keys, days, tip, loop = fal
   text(p, "Schematic — not to scale", M + CW * 0.6, 132, { size: 7.5, font: SI, color: sub });
   y -= 8;
   for (const [d, t, body] of days) { text(p, d, M, y, { size: 9.5, font: NB, color: accent }); text(p, t, M + 56, y, { size: 11, font: SB, color: ink }); y = para(p, body, M, y - 14, CW * 0.56, { size: 9.3, leading: 12.5 }) - 7; }
-  if (tip) { const top = Math.min(y, 150); callout(p, M, top, CW * 0.56, top - 62, "Make it yours", tip, accent); }
+  if (tip) {
+    const tw = CW * 0.56, lines = measureLines(tip, tw - 28), ch = 26 + lines * 13, ctop = y - 4;
+    callout(p, M, ctop, tw, ch, "Make it yours", tip, accent);
+    const gapTop = ctop - ch - 8, gapBot = 78;
+    if (gapTop - gapBot > 90) motif(p, M, tw, (gapTop + gapBot) / 2 - 18, accent);
+  }
   footer(p, title);
 }
 
@@ -220,8 +232,9 @@ function budget() {
     text(p, "≈ THB 45,000  ·  about €1,150 / £980 / $1,250", M, yl2 - 4, { size: 9.5, font: SB, color: terra });
     let yr = subhead(p, "Prices to anchor on", x2, top, blue);
     yr = bullets(p, ["Street meal: THB 50–80", "Restaurant main: THB 120–250", "Local beer: THB 70–100", "Coffee: THB 50–80", "Scooter hire: THB 200–300/day", "Litre of petrol: ≈THB 40", "Guesthouse double: THB 600–1,200", "Domestic flight: THB 1,000–2,500", "Train (2nd class): THB 200–900", "Day tour: THB 800–1,800"], x2, yr, colW, { accent: blue, gap: 2 });
-    return 0;
-  }, "Budget");
+    p.drawLine({ start: { x: M + CW / 2, y: top + 4 }, end: { x: M + CW / 2, y: Math.min(yl2 - 18, yr) + 4 }, thickness: 0.6, color: hair });
+    return Math.min(yl2 - 18, yr);
+  }, "Budget", "Thailand is one of the few places where 'comfort' costs less than 'budget' back home — what you save on the daily spend, treat yourself with on one special night.");
 }
 function regionsMap() {
   pageW("05", "Destinations", "The lie of the land", blue, (p, y0) => {
@@ -421,7 +434,7 @@ function phrasebook1() {
     let yr = subhead(p, "Getting around", x2, y0, terra);
     for (const [a, b] of [["Where is…?", "…yu thi nai?"], ["How much?", "tao rai?"], ["Too expensive", "phaeng pai"], ["Turn left / right", "liao sai / liao khwa"], ["Straight on", "trong pai"], ["Stop here", "jort thi ni"], ["Bus / train station", "sathani rot / rot fai"], ["Petrol station", "pam nam man"], ["Toilet", "hong nam"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14.5 });
     return Math.min(yl, yr);
-  }, "Phrasebook I");
+  }, "Phrasebook I", "Tones matter, but warmth matters more. Even a shaky 'sawatdee' delivered with a smile is met with delight — try it on the first person you meet.");
 }
 function phrasebook2() {
   pageW("22", "Useful expressions", "A Thai phrasebook · II", ochre, (p, y0) => {
