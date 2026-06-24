@@ -417,6 +417,88 @@ function phrasebook2() {
     return 0;
   }, "Phrasebook II");
 }
+// ---- editorial encadré (inline box) ----
+function measureLines(s, w, { size = 9.5, font = SI } = {}) { let line = "", n = 0; for (const word of s.split(" ")) { const t = line ? line + " " + word : word; if (font.widthOfTextAtSize(t, size) > w) { n++; line = word; } else line = t; } if (line) n++; return n; }
+function encadre(p, x, y, w, kind, body) {
+  const colors = { "Did you know?": blue, "Insider tip": sage, "Avoid": terra }; const accent = colors[kind] || terra;
+  const tw = w - 28, lines = measureLines(body, tw), h = 26 + lines * 13;
+  p.drawRectangle({ x, y: y - h, width: w, height: h, color: panel, borderColor: hair, borderWidth: 0.8 });
+  p.drawRectangle({ x, y: y - h, width: 3, height: h, color: accent });
+  tracked(p, kind.toUpperCase(), x + 14, y - 16, { size: 8, font: NB, color: accent, tracking: 1.4 });
+  para(p, body, x + 14, y - 30, tw, { size: 9.5, font: SI, color: ink, leading: 13 });
+  return y - h - 14;
+}
+function checkBoxLine(p, x, y, label, w, accent = terra) { p.drawRectangle({ x, y, width: 9, height: 9, borderColor: accent, borderWidth: 1, color: undefined }); para(p, label, x + 16, y + 7, w - 16, { size: 9.5, font: SF, color: ink, leading: 12 }); }
+
+function cultureHistory() {
+  pageW("11", "Culture & heritage", "A short history & the arts", terra, (p, y0) => {
+    const colW = CW / 2 - 16, x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "A timeline, in brief", M, y0, terra);
+    for (const [a, b] of [["Early kingdoms", "Dvaravati & strong Khmer influence (10th–12th c.) — the temples of Isan."], ["Sukhothai, 13th c.", "The first Thai kingdom; a golden age of art and the Thai script."], ["Ayutthaya, 1351–1767", "A powerful, cosmopolitan capital, razed by the Burmese."], ["Bangkok, from 1782", "The Chakri dynasty; Siam alone in Asia was never colonised."], ["Today", "A constitutional monarchy, and a creative boom in design & film."]]) yl = entry(p, a, "— " + b, M, yl, colW, { size: 9.5, leading: 13.5 }) - 3;
+    yl -= 4; yl = encadre(p, M, yl, colW, "Did you know?", "Bangkok is home to Michelin-starred street-food stalls — pavement cooking here is treated as an art, not a last resort.");
+    let yr = subhead(p, "Heritage to seek out", x2, y0, sage);
+    yr = bullets(p, ["Bangkok's wats: Pho, Arun & the Emerald Buddha.", "The UNESCO ruins of Ayutthaya & Sukhothai.", "Chiang Mai's Lanna temples & Doi Suthep.", "Isan's Khmer sanctuaries — Phimai & Phanom Rung.", "Jim Thompson House — silk, art & a mystery."], x2, yr, colW, { accent: sage }) - 6;
+    yr = subhead(p, "The living scene", x2, yr, blue);
+    yr = bullets(p, ["Creative districts (Charoenkrung, Bangkok).", "Auteur cinema — Apichatpong's Palme d'Or.", "Craft that's still made by hand: ceramics, weaving, lacquer.", "Festivals that light the calendar (see When to go)."], x2, yr, colW, { accent: blue });
+    return Math.min(yl, yr);
+  }, "Culture & History", "Pair a temple at dawn with a museum at noon: Thailand reveals itself fastest through its sacred spaces and its makers.");
+}
+function shopping() {
+  pageW("12", "Take a little home", "Shopping & craft", ochre, (p, y0) => {
+    const colW = CW / 2 - 16, x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Where to shop", M, yl, terra);
+    yl = bullets(p, ["Markets — Chatuchak (Bangkok), the Chiang Mai night bazaars.", "Air-conditioned malls — ICONSIAM for a rainy afternoon.", "Village workshops — Isan silk, Lampang ceramics, Bo Sang umbrellas.", "Floating & weekend markets for the theatre of it."], M, yl, colW, { accent: terra }) - 4;
+    yl = subhead(p, "Worth buying", M, yl, sage);
+    yl = bullets(p, ["Thai silk, celadon & lacquerware.", "Curry pastes, spices & dried fruit.", "Teak and bamboo homeware.", "Hill-tribe textiles & cotton clothing."], M, yl, colW, { accent: sage });
+    yr = subhead(p, "Buy smart", x2, yr, blue);
+    yr = bullets(p, ["Counterfeits are everywhere — and illegal to import home.", "Bargain with a smile in markets; fixed prices in malls.", "Favour authentic craft over fakes — it lasts and it gives back.", "Check weight & fragility before you commit to ceramics."], x2, yr, colW, { accent: blue }) - 6;
+    yr = encadre(p, x2, yr, colW, "Avoid", "Exporting genuine antiques or old Buddha images is forbidden without a Fine Arts Department permit — and buying a Buddha head as a 'souvenir' is best avoided out of respect.");
+    return Math.min(yl, yr);
+  }, "Shopping", "The best souvenirs are edible or wearable — curry pastes, silk, a hand-thrown bowl — and they keep the craft alive back home.");
+}
+function travellers() {
+  pageW("21", "Practical tips", "For every traveller", blue, (p, y0) => {
+    const colW = CW / 2 - 16, x2 = M + CW / 2 + 16; let yl = y0, yr = y0;
+    yl = subhead(p, "Solo women", M, yl, terra);
+    yl = bullets(p, ["Widely regarded as safe and easy; usual night-time sense applies.", "Modest dress is appreciated away from the beach.", "Night transport is reliable — trains, Grab."], M, yl, colW, { accent: terra }) - 4;
+    yl = subhead(p, "Reduced mobility", M, yl, sage);
+    yl = bullets(p, ["Bangkok improves (BTS lifts, accessible big hotels) but pavements are uneven and temples often have steps.", "Favour newer hotels; confirm access in advance.", "Plan private taxis/transfers; some resorts offer adapted rooms."], M, yl, colW, { accent: sage });
+    yr = subhead(p, "LGBTQ+", x2, yr, ochre);
+    yr = bullets(p, ["Among Asia's most welcoming destinations.", "Visible scenes in Bangkok, Phuket & Chiang Mai.", "Usual discretion in rural and religious areas."], x2, yr, colW, { accent: ochre }) - 4;
+    yr = subhead(p, "Digital nomads", x2, yr, blue);
+    yr = bullets(p, ["Fast, cheap internet; superb café & coworking culture (Chiang Mai, Bangkok).", "Check the latest long-stay / remote-work visas before you commit."], x2, yr, colW, { accent: blue }) - 4;
+    yr = subhead(p, "Business", x2, yr, terra);
+    yr = bullets(p, ["Districts: Sathorn, Sukhumvit, Silom.", "Exchange cards with both hands; a small gift is appreciated.", "Easy to bolt a few leisure days onto a work trip."], x2, yr, colW, { accent: terra });
+    return Math.min(yl, yr);
+  }, "Travellers", "Whatever your profile, the same rule serves you well in Thailand: dress modestly, keep a cool heart, and a smile unlocks the rest.");
+}
+function resources() {
+  pageW("23", "Before you leave the book", "Resources & a few words", sage, (p, y0) => {
+    const colW = CW / 2 - 16, x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "Trusted & official", M, y0, terra);
+    yl = bullets(p, ["Tourism Authority of Thailand — tourismthailand.org", "Immigration (visas) — immigration.go.th", "National parks — dnp.go.th", "Trains/buses/ferries — 12Go", "Tickets & tours — Klook / Kkday", "Rides & food — Grab / Bolt"], M, yl, colW, { accent: terra }) - 6;
+    yl = encadre(p, M, yl, colW, "Insider tip", "Save the Tourist Police number — 1155, in English — before you go. It's the fastest help in any dispute or loss.");
+    let yr = subhead(p, "A few words of Thai", x2, y0, blue);
+    for (const [a, b] of [["Hello", "sawatdee (khrap/kha)"], ["Thank you", "khop khun"], ["How much?", "tao rai?"], ["Delicious!", "aroi!"], ["Not spicy", "mai phet"], ["Where is…?", "…yu thi nai?"], ["The bill", "check bin"], ["Good luck", "chok dee"]]) yr = entry(p, a, "— " + b, x2, yr, colW, { size: 9.5, leading: 14 });
+    yr -= 2; text(p, "Men end with 'khrap', women with 'kha'.", x2, yr, { size: 9, font: SI, color: sub });
+    return Math.min(yl, yr);
+  }, "Resources", "Bookmark the official sites before you fly — visa rules and park openings change, and the source of truth beats a forum thread.");
+}
+function appendices() {
+  pageW("24", "Appendices", "Before-you-go checklists", terra, (p, y0) => {
+    const colW = CW / 2 - 16, x2 = M + CW / 2 + 16;
+    let yl = subhead(p, "Before you go", M, y0, terra); let yy = yl;
+    for (const it of ["Passport valid 6 months", "Check visa exemption (immigration.go.th)", "Insurance — motorbike cover if riding", "Vaccines current (clinic 6–8 wks ahead)", "Flights & first/last night booked", "Int'l Driving Permit (if driving)", "eSIM / SIM arranged", "Offline maps + document copies"]) { checkBoxLine(p, M, yy - 9, it, colW, terra); yy -= 22; }
+    yy -= 6; let yl2 = subhead(p, "First-aid kit", M, yy, blue);
+    for (const it of ["Rehydration salts", "Anti-diarrhoeals", "Antiseptic & plasters", "Repellent & after-bite", "Personal meds + prescription"]) { checkBoxLine(p, M, yl2 - 9, it, colW, blue); yl2 -= 22; }
+    let yr = subhead(p, "Packing (tropical)", x2, y0, sage); let yry = yr;
+    for (const it of ["Light, modest clothes for temples", "Swimwear + sarong", "Sandals + trainers", "Rain jacket / poncho", "Reef-safe sunscreen + hat", "DEET repellent", "Universal adapter + power bank", "Reusable water bottle"]) { checkBoxLine(p, x2, yry - 9, it, colW, sage); yry -= 22; }
+    yry -= 6; let yr2 = subhead(p, "Documents to carry", x2, yry, ochre);
+    for (const it of ["Passport + copies", "Visa / proof of onward travel", "Insurance details", "Licence + IDP", "A few passport photos"]) { checkBoxLine(p, x2, yr2 - 9, it, colW, ochre); yr2 -= 22; }
+    return Math.min(yl2, yr2);
+  }, "Appendices", "Print this page, or screenshot it to your phone — your pre-flight ritual in a single glance.");
+}
+
 function closing() {
   pageW("", "One last thing", "Go slowly, see deeply", sage, (p, y0) => {
     let y = para(p, "If there's one idea to carry into Thailand, it's this: resist the urge to see everything. The travellers who fall hardest for this country are the ones who slow down — who spend a third morning at the same coffee stall until the owner knows their order, who take the long road over the loop, who say yes to the invitation they didn't plan for.", M, y0, CW, { leading: 15.5 }) - 8;
@@ -495,6 +577,7 @@ async function buildDoc([w, h]) {
     ["Fly to Phuket, Krabi or Ko Samui, then ferry on.", "Long-tails & speedboats for island hops.", "Scooters rule on the islands themselves.", "See 'Which island?' to choose your base."],
     "The South");
   islandsTable();
+  cultureHistory();
   destination("10", "Ayutthaya, Kanchanaburi & Isaan", blue, "Beyond the headline sights lies a quieter, history-rich Thailand — easy add-ons from Bangkok, or a route all their own.",
     ["Ayutthaya — the romantic ruins of the old capital", "Kanchanaburi — the River Kwai & Erawan Falls", "Khao Yai — waterfalls, gibbons & vineyards", "Phimai & Phanom Rung — Khmer temples older than Angkor", "The Mekong towns & surreal Sala Keoku"],
     ["Ayutthaya: rent a bike to ride between the temples.", "Kanchanaburi: an easy, lovely long weekend from Bangkok.", "Isaan: little English, the warmest welcomes, lowest prices.", "Trains & buses link it all; a car reaches the villages."],
@@ -506,9 +589,9 @@ async function buildDoc([w, h]) {
   divider("V", "Part Five", "Getting around", "How the country joins up, and how to drive it.", ["The transport network map", "Flights, trains, buses & boats", "Driving & where to rent a scooter"], (p, cx, cy, c) => { plane(p, cx - 90, cy + 10, 30, c, 1); train(p, cx + 10, cy - 10, 28, c, 1); bus(p, cx + 100, cy + 6, 22, c, 1); }, sage);
   transportMap(); transport(); driving();
   divider("VI", "Part Six", "Where to stay & what to eat", "From raft-houses to rooftop curries.", ["Accommodation & where to base", "How to eat in Thailand", "A region-by-region dish glossary"], (p, cx, cy, c) => { temple(p, cx - 70, cy - 20, 40, c, 1); bowl(p, cx + 70, cy - 8, 30, c, 1); palm(p, cx, cy - 20, 34, c, 1); }, ochre);
-  accommodation(); eating(); dishesNorth(); dishesSouth();
+  accommodation(); eating(); dishesNorth(); dishesSouth(); shopping();
   divider("VII", "Part Seven", "Experiences & practical tips", "What to do — and how to do it well.", ["Things to do, by interest", "Culture & etiquette", "Safety, scams & responsible travel", "A Thai phrasebook"], (p, cx, cy, c) => { mountains(p, cx - 150, cy - 24, 300, 70, c, 1); lantern(p, cx, cy + 6, 30, c, 1); palm(p, cx - 110, cy - 24, 40, c, 1); }, blue);
-  activities(); culture(); safety(); phrasebook1(); phrasebook2();
+  activities(); culture(); safety(); travellers(); phrasebook1(); phrasebook2(); resources(); appendices();
   closing(); back();
   return doc.save();
 }

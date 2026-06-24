@@ -17,7 +17,7 @@ chiang mai guide, printable guide, travel ebook, asia travel, trip planner
 
 ## Description (plain text — paste as is)
 
-Thailand: The Complete Guide — a beautiful, illustrated PDF guidebook covering where to go, what to eat and how to travel Thailand slowly. 37 pages. Instant download · US Letter + A4.
+Thailand: The Complete Guide — a beautiful, illustrated PDF guidebook covering where to go, what to eat and how to travel Thailand slowly. 42 pages. Instant download · US Letter + A4.
 
 ✦ THE SLOW ATLAS
 Legendary routes, slowly travelled.
@@ -25,7 +25,7 @@ Legendary routes, slowly travelled.
 A companion for travellers who'd rather wind through mountain villages and roadside noodle stalls than rush between airports — with destinations, four ready-to-use itineraries, hand-drawn maps, a dish glossary and a Thai phrasebook.
 
 ━━━━━━━━━━━━━━━━━━━━
-WHAT'S INSIDE · 37 pages (a complete illustrated guide)
+WHAT'S INSIDE · 42 pages (a complete illustrated guide)
 • Introduction & how to travel Thailand slowly
 • Before you go — when to visit (with a month-by-month almanac), documents, health & packing
 • Budget — daily costs low to lavish + a sample 2-week breakdown
@@ -34,8 +34,11 @@ WHAT'S INSIDE · 37 pages (a complete illustrated guide)
 • Getting around — a transport NETWORK MAP (flights/trains/buses/ferries), modes compared, driving & where to rent a scooter
 • Where to stay — types, prices & where to base yourself
 • Food & drink — how to eat + a region-by-region dish glossary
-• Things to do, culture & etiquette, safety, scams & responsible travel
-• A Thai phrasebook + hand-drawn maps & illustrations throughout
+• Culture & history — a short timeline, heritage sites & the living arts
+• Shopping & craft, things to do, culture & etiquette
+• Safety, scams & responsible travel + notes for every traveller (solo women, accessibility, LGBTQ+, nomads, business)
+• A Thai phrasebook, resources, before-you-go checklists
+• "Insider tip", "Avoid" & "Did you know?" boxes + hand-drawn maps & illustrations throughout
 
 ━━━━━━━━━━━━━━━━━━━━
 HOW IT WORKS
