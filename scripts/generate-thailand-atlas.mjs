@@ -103,7 +103,7 @@ function table(p, x, y, cols, rows, { headerColor = terra, rowH = 20, fontSize =
 function drawMap(p, bx, by, bw, bh, nodes, routes) {
   const px = (nx) => bx + nx * bw, py = (ny) => by + ny * bh;
   for (const r of routes) { const pts = r.keys.map((k) => nodes.find((n) => n.key === k)).filter(Boolean); for (let i = 0; i < pts.length - 1; i++) p.drawLine({ start: { x: px(pts[i].x), y: py(pts[i].y) }, end: { x: px(pts[i + 1].x), y: py(pts[i + 1].y) }, thickness: 1.6, color: r.color }); if (r.loop && pts.length > 1) p.drawLine({ start: { x: px(pts.at(-1).x), y: py(pts.at(-1).y) }, end: { x: px(pts[0].x), y: py(pts[0].y) }, thickness: 1.6, color: r.color }); }
-  for (const n of nodes) { p.drawCircle({ x: px(n.x), y: py(n.y), size: n.big ? 4 : 2.6, color: n.big ? terra : ink }); text(p, n.name, px(n.x) + (n.lx ?? 7), py(n.y) + (n.ly ?? -3), { size: n.big ? 9 : 8, font: n.big ? NB : SN, color: ink }); }
+  for (const n of nodes) { p.drawCircle({ x: px(n.x), y: py(n.y), size: n.big ? 4 : 2.6, color: n.c || (n.big ? terra : ink) }); text(p, n.name, px(n.x) + (n.lx ?? 7), py(n.y) + (n.ly ?? -3), { size: n.big ? 9 : 8, font: n.big ? NB : SN, color: ink }); }
 }
 
 // ---------- big pages ----------
@@ -227,9 +227,22 @@ function regionsMap() {
   pageW("05", "Destinations", "The lie of the land", blue, (p, y0) => {
     let y = para(p, "Thailand falls into four broad regions. Don't try to cover them all — choose one or two and travel slowly.", M, y0, CW * 0.5, { leading: 14 }) - 8;
     for (const [n, a, d] of [["The North", terra, "Mountains, Lanna temples, hill tribes, the best road trips and cool air. Chiang Mai, Pai, Mae Hong Son."], ["The Centre", blue, "Bangkok's energy, ancient Ayutthaya, the River Kwai, beaches at Hua Hin. The hub you'll arrive in."], ["Isaan (NE)", sage, "Khmer ruins, silk villages, the Mekong, fiery food, few tourists, big welcomes."], ["The South", ochre, "Two coasts of islands, karsts and rainforest. Phuket, Krabi, Khao Sok, Koh Lanta, the Gulf isles."]]) { p.drawRectangle({ x: M, y: y - 22, width: 3, height: 34, color: a }); text(p, n, M + 12, y, { size: 12, font: SB, color: ink }); y = para(p, d, M + 12, y - 14, CW * 0.5 - 12, { size: 9.3, leading: 12.5 }) - 9; }
-    const nodes = [{ key: "cnx", name: "Chiang Mai", x: 0.42, y: 0.92, big: true }, { key: "pai", name: "Pai", x: 0.3, y: 0.99 }, { key: "mhs", name: "Mae Hong Son", x: 0.14, y: 0.9, lx: -78, ly: 4 }, { key: "bkk", name: "Bangkok", x: 0.5, y: 0.5, big: true }, { key: "ayu", name: "Ayutthaya", x: 0.46, y: 0.6 }, { key: "kan", name: "Kanchanaburi", x: 0.3, y: 0.54, lx: -84 }, { key: "isn", name: "Isaan", x: 0.8, y: 0.66, lx: 6 }, { key: "kyai", name: "Khao Yai", x: 0.62, y: 0.58 }, { key: "krabi", name: "Krabi", x: 0.42, y: 0.14 }, { key: "phuket", name: "Phuket", x: 0.33, y: 0.1, lx: -44 }, { key: "samui", name: "Ko Samui", x: 0.58, y: 0.2 }];
-    drawMap(p, M + CW * 0.56, 120, CW * 0.42, H - M - 110 - 120, nodes, []);
-    text(p, "Schematic — not to scale", M + CW * 0.56, 102, { size: 7.5, font: SI, color: sub });
+    // fill the lower-left with an editorial box (colours below match the map)
+    encadre(p, M, y - 2, CW * 0.5, "Insider tip", "Each region has its own colour on the map opposite — and its own pace. Link two at most, ideally with a short internal flight, and let the road in between be part of the trip.");
+    // colour each city by its region; connect them with faint regional 'constellations'
+    const nodes = [
+      { key: "cnx", name: "Chiang Mai", x: 0.42, y: 0.92, big: true, c: terra }, { key: "pai", name: "Pai", x: 0.3, y: 0.99, c: terra }, { key: "mhs", name: "Mae Hong Son", x: 0.14, y: 0.9, lx: -78, ly: 4, c: terra },
+      { key: "bkk", name: "Bangkok", x: 0.5, y: 0.5, big: true, c: blue }, { key: "ayu", name: "Ayutthaya", x: 0.46, y: 0.6, c: blue }, { key: "kan", name: "Kanchanaburi", x: 0.3, y: 0.54, lx: -84, c: blue }, { key: "kyai", name: "Khao Yai", x: 0.62, y: 0.58, c: blue },
+      { key: "isn", name: "Isaan", x: 0.8, y: 0.66, lx: 6, c: sage },
+      { key: "krabi", name: "Krabi", x: 0.42, y: 0.14, c: ochre }, { key: "phuket", name: "Phuket", x: 0.33, y: 0.1, lx: -44, c: ochre }, { key: "samui", name: "Ko Samui", x: 0.58, y: 0.2, c: ochre },
+    ];
+    const routes = [
+      { color: terra, keys: ["mhs", "pai", "cnx"] },
+      { color: blue, keys: ["kan", "bkk", "ayu"] }, { color: blue, keys: ["bkk", "kyai"] },
+      { color: ochre, keys: ["phuket", "krabi", "samui"] },
+    ];
+    drawMap(p, M + CW * 0.56, 116, CW * 0.42, H - M - 106 - 116, nodes, routes);
+    text(p, "Schematic — not to scale", M + CW * 0.56, 98, { size: 7.5, font: SI, color: sub });
     return 0;
   }, "Regions");
 }
